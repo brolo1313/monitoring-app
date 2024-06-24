@@ -1,57 +1,59 @@
 // main.js
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, } = require('electron');
+
+const electron_1 = require("electron");
 const path = require('path');
 const si = require('systeminformation');
 
-
-// const gpuData = async () => {
-//     try {
-//         const graphicsInfo = await si.graphics();
-//         console.log('graphicsInfo',graphicsInfo);
-//         return graphicsInfo;
-//     } catch (error) {
-//         console.error('Error fetching GPU data:', error);
-//     }
-// };
-
-// gpuData()
-
 function createWindow() {
-    const mainWindow = new BrowserWindow({
+    const mainWindow = new electron_1.BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
             preload: path.join(__dirname, '../electron/preload.js'),
             contextIsolation: true,
             enableRemoteModule: false,
-            nodeIntegration: false
+            nodeIntegration: true
         }
     });
 
     const indexPath = path.join(__dirname, '../dist/browser/index.html');
-    console.log('Loading index.html from:', indexPath); 
     mainWindow.loadFile(indexPath);
 
-    mainWindow.webContents.openDevTools(); // Opens DevTools
-    // mainWindow.loadFile(path.join(__dirname, 'C:/Users/brolo/Desktop/electron-monitor-app/dist/electron-monitor-app/browser/index.html'));
+    mainWindow.webContents.openDevTools();
 }
 
-app.whenReady().then(() => {
-    createWindow();
-
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+try {
+    // This method will be called when Electron has finished
+    // initialization and is ready to create browser windows.
+    // Some APIs can only be used after this event occurs.
+    // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
+    electron_1.app.on('ready', () => setTimeout(createWindow, 400));
+    // Quit when all windows are closed.
+    electron_1.app.on('window-all-closed', () => {
+        // On OS X it is common for applications and their menu bar
+        // to stay active until the user quits explicitly with Cmd + Q
+        if (process.platform !== 'darwin') {
+            electron_1.app.quit();
+        }
     });
-});
-
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
-});
+    electron_1.app.on('activate', () => {
+        // On OS X it's common to re-create a window in the app when the
+        // dock icon is clicked and there are no other windows open.
+        if (win === null) {
+            createWindow();
+        }
+    });
+}
+catch (e) {
+    // Catch Error
+    // throw e;
+}
 
 // Handle IPC calls for system information
 ipcMain.handle('get-system-info', async () => {
     const gpuData = await si.graphics();
-    console.log('gpuData',gpuData);
     const cpuTemp = await si.cpuTemperature();
+
     return { gpuData, cpuTemp };
 });

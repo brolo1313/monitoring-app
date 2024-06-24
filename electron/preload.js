@@ -1,5 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    getSystemInfo: () => ipcRenderer.invoke('get-system-info')
+    getSystemInfo: () => ipcRenderer.invoke('get-system-info') ,// my API
 });
