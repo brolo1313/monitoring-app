@@ -30,13 +30,17 @@ export class AppComponent {
     }
   }
 
- async ngOnInit() {
-    this.systemInfo = await this.systemInfoService.getSystemInfo();
+  async ngOnInit() {
+    await this.fetchSystemInfo();
+  }
 
-    // this.userInfo =  this.systemInfoService.getUserMocks();
-    // this.systemInfo =  this.systemInfoService.getSystemInfo1();
-
-    console.log(' this.systemInfo', this.systemInfo);
-
+  async fetchSystemInfo() {
+    try {
+      this.systemInfo = await this.systemInfoService.getSystemInfo();
+      console.log('window', window);
+      console.log('systemInfo', this.systemInfo);
+    } catch (error) {
+      console.error('Error fetching system info', error);
+    }
   }
 }
