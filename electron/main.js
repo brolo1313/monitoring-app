@@ -17,16 +17,30 @@ function createWindow() {
     },
   });
 
-  
   const indexPath = path.join(__dirname, "../dist/browser/index.html");
-  console.log("indexPath:", indexPath); // Log the indexPath to verify it's correct
-  mainWindow.loadFile(indexPath);
 
-  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
-    console.error(`Failed to load ${validatedURL}: ${errorDescription} (${errorCode})`);
-    // You can display a fallback page or a custom error message here
-    mainWindow.loadFile(path.join(__dirname, "../dist/browser/index.html"));
-  });
+  const isLocalTest = env.npm_lifecycle_event === "test-local";
+
+  mainWindow.loadURL(
+    isLocalTest
+      ? "http://localhost:4200"
+      : `file://${path.join(__dirname, "../dist/browser/index.html")}`
+  );
+
+  mainWindow.webContents.on(
+    "did-fail-load",
+    (event, errorCode, errorDescription, validatedURL) => {
+      console.error(
+        `Failed to load ${validatedURL}: ${errorDescription} (${errorCode})`
+      );
+      // You can display a fallback page or a custom error message here
+      mainWindow.loadURL(
+        isLocalTest
+          ? "http://localhost:4200"
+          : `file://${path.join(__dirname, "../dist/browser/index.html")}`
+      );
+    }
+  );
 
   require("electron-reloader")(module);
   mainWindow.webContents.openDevTools();
@@ -35,7 +49,6 @@ function createWindow() {
 }
 
 try {
-
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
@@ -65,7 +78,6 @@ try {
 ipcMain.handle("get-system-info", async () => {
   const gpuData = await si.graphics();
   const cpuTemp = await si.cpuTemperature();
-
 
   return { gpuData, cpuTemp };
 });
