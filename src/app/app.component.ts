@@ -4,6 +4,12 @@ import { RouterOutlet } from '@angular/router';
 import { SystemInfoService } from './services/system-info-service';
 import { ElectronService } from './services/electron-service';
 
+declare global {
+  interface Window {
+    versions:any;
+  }
+}
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -32,6 +38,7 @@ export class AppComponent {
 
   async ngOnInit() {
     await this.fetchSystemInfo();
+    await this.funcEventToMainProcess();
   }
 
   async fetchSystemInfo() {
@@ -43,4 +50,10 @@ export class AppComponent {
       console.error('Error fetching system info', error);
     }
   }
+
+  async funcEventToMainProcess () {
+    const response = await window.versions.ping()
+    console.log('come from main process:' , response) // prints out 'pong'
+  }
+  
 }
