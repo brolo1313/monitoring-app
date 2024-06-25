@@ -4,6 +4,7 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const electron_1 = require("electron");
 const path = require("path");
 const si = require("systeminformation");
+const { loadAppUrl, getEnvUrls } = require("./helpers/loadUrl");
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -17,15 +18,8 @@ function createWindow() {
     },
   });
 
-  const indexPath = path.join(__dirname, "../dist/browser/index.html");
-
-  const isLocalTest = env.npm_lifecycle_event === "test-local";
-
-  mainWindow.loadURL(
-    isLocalTest
-      ? "http://localhost:4200"
-      : `file://${path.join(__dirname, "../dist/browser/index.html")}`
-  );
+  const { localEnv, buildEnv, isLocalTest } = getEnvUrls();
+  loadAppUrl(mainWindow, localEnv, buildEnv, isLocalTest);
 
   mainWindow.webContents.on(
     "did-fail-load",
@@ -34,11 +28,7 @@ function createWindow() {
         `Failed to load ${validatedURL}: ${errorDescription} (${errorCode})`
       );
       // You can display a fallback page or a custom error message here
-      mainWindow.loadURL(
-        isLocalTest
-          ? "http://localhost:4200"
-          : `file://${path.join(__dirname, "../dist/browser/index.html")}`
-      );
+      loadAppUrl(mainWindow, localEnv, buildEnv, isLocalTest);
     }
   );
 
