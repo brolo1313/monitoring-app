@@ -6,9 +6,9 @@ SYS info
 </div>
 
 <h1>System Information test1</h1>
-<div *ngIf="systemInfo">
+<div *ngIf="true">
   <h2>GPU Information</h2>
-  <pre>{{ systemInfo?.gpuData | json }}</pre>
+  <pre>{{ gpuTemperature }}&#8451; </pre>
   <h2>CPU Temperature</h2>
   <pre>{{ systemInfo?.cpuTemp?.main }}°C</pre>
 </div>

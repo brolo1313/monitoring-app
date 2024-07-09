@@ -23,6 +23,11 @@ export class AppComponent {
   systemInfo: any;
   userInfo: any;
 
+  gpuData: any;
+  cpuTemp: any;
+
+  public gpuTemperature : number = 0;
+
   constructor(private systemInfoService: SystemInfoService,
     private electronService: ElectronService,
   ) {
@@ -37,18 +42,28 @@ export class AppComponent {
   }
 
   async ngOnInit() {
-    await this.fetchSystemInfo();
+    this.systemInfoService.gpuData$.subscribe(data => {
+      this.gpuData = data;
+      this.gpuTemperature = data?.controllers[0]?.temperatureGpu;
+    });
+
+    this.systemInfoService.cpuTemp$.subscribe(temp => {
+      this.cpuTemp = temp;
+    });
+    // await this.fetchSystemInfo();
     await this.funcEventToMainProcess();
   }
 
   async fetchSystemInfo() {
-    try {
-      this.systemInfo = await this.systemInfoService.getSystemInfo();
-      console.log('window', window);
-      console.log('systemInfo', this.systemInfo);
-    } catch (error) {
-      console.error('Error fetching system info', error);
-    }
+    // try {
+    //   this.systemInfo = await this.systemInfoService.getSystemInfo();
+    //   console.log('window', window);
+    //   console.log('systemInfo', this.systemInfo);
+    // } catch (error) {
+    //   console.error('Error fetching system info', error);
+    // }
+
+    //  this.systemInfoService.sendMessage('get-system-info');
   }
 
   async funcEventToMainProcess () {
