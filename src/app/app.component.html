@@ -1,14 +1,31 @@
-SYS info
 
-<div *ngIf="userInfo">
-  <span>{{userInfo.name}}</span>
-  <span>{{userInfo.age}}</span>
+<div>
+  <span>{{  isElectronApp ? "desktop agent" : "browser agent" }}</span>
 </div>
 
 <h1>System Information test1</h1>
-<div *ngIf="true">
-  <h2>GPU Information</h2>
-  <pre>{{ gpuTemperature }}&#8451; </pre>
-  <h2>CPU Temperature</h2>
-  <pre>{{ systemInfo?.cpuTemp?.main }}°C</pre>
-</div>
+<ng-container *ngIf="!isLoading; else loader">
+  <div *ngIf="isElectronApp; else browser">
+    <div class="gpu-wrapper">
+      <ng-container *ngFor="let item of data?.gpuData?.controllers">
+        <div *ngIf="item.vendor == 'NVIDIA'">
+          <p class="gpu-name">
+            <strong>{{ item.vendor }}</strong>
+          </p>
+          <p class="gpu-temparature">
+            <strong>{{ item.temperatureGpu }}&#8451;</strong>
+          </p>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="cpu-wrapper">
+      <h2>CPU Temperature</h2>
+      <pre>{{ data?.cpuTemp?.main }}°C</pre>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #browser> browser data </ng-template>
+<ng-template #loader> Loading... </ng-template>
+

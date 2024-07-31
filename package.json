@@ -10,7 +10,7 @@
     "ng": "ng",
     "start": "electron-forge start",
     "test-build": "ng build --base-href ./ && electron .",
-    "test-local": "concurrently \"ng serve\" \"wait-on http://localhost:4200 && electron .\"",
+    "test-local": "concurrently \"ng serve --configuration=electron-local\" \"wait-on http://localhost:4200 && electron .\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
