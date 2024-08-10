@@ -9,6 +9,8 @@ const { loadAppUrl, getEnvUrls } = require("./helpers/loadUrl");
 const { setInterval } = require("timers/promises");
 const EventEmitter = require("events");
 const eventEmitter = new EventEmitter();
+const { exec } = require('child_process');
+
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -82,9 +84,18 @@ async function getSystemInfo(connection) {
   try {
     const gpuData = await si.graphics();
     const cpuTemp = await si.cpuTemperature();
-    connection.send(JSON.stringify({ gpuData, cpuTemp }));
+    const currentLoad = await si.currentLoad();
+    const mem = await si.mem();
+    const cpu = await si.cpu();
+    const cpuCurrentSpeed = await si.cpuCurrentSpeed();
+    const users = await si.users();
+    const system = await si.system();
+    const bios = await si.bios();
+
+    connection.send(JSON.stringify({ gpuData, cpuTemp, currentLoad, cpu, cpuCurrentSpeed ,mem, users, system, bios }));
   } catch (error) {
     console.log("getSystemInfo has error", error);
+    connection.send('{"error": "Failed to retrieve system information"}');
   }
 }
 
@@ -112,6 +123,31 @@ function webSocketInit() {
 
 
 
+function getWindowsCpuTemperature(callback) {
+  const script = `
+ Get-CimInstance MSAcpi_ThermalZoneTemperature -Namespace "root/wmi" | Select CurrentTemperature
+  `;
+  exec(`powershell -Command "${script}"`, (error, stdout, stderr) => {
+    if (error) {
+      console.log("Error executing PowerShell script:", error);
+      return callback(null);
+    }
+    const tempCelsius = parseFloat(stdout.trim());
+    console.log('tempCelsius', tempCelsius);
+    callback(isNaN(tempCelsius) ? null : tempCelsius);
+  });
+}
+
+// Usage
+// getWindowsCpuTemperature((temp) => {
+//   console.log('temp', temp);
+//   if (temp !== null) {
+//     console.log("CPU Temperature:", temp, "°C");
+//   } else {
+//     console.log("Unable to retrieve CPU temperature.");
+//   }
+// });
+
 
 // Handle IPC calls for system information
 // ipcMain.handle("get-system-info", async () => {
@@ -134,5 +170,47 @@ function webSocketInit() {
 //     const gpuData = await si.graphics();
 //     const cpuTemp = await si.cpuTemperature();
 //     return { gpuData, cpuTemp };
+//   });
+// }
+
+
+// function cpuTemperature(callback) {
+
+//   return new Promise((resolve) => {
+//     process.nextTick(() => {
+//       let result = {
+//         main: null,
+//         cores: [],
+//         max: null,
+//         socket: [],
+//         chipset: null
+//       };
+//       if (_windows) {
+//         try {
+//           util.powerShell('Get-CimInstance MSAcpi_ThermalZoneTemperature -Namespace "root/wmi" | Select CurrentTemperature').then((stdout, error) => {
+//             if (!error) {
+//               let sum = 0;
+//               let lines = stdout.split('\r\n').filter(line => line.trim() !== '').filter((line, idx) => idx > 0);
+//               lines.forEach(function (line) {
+//                 let value = (parseInt(line, 10) - 2732) / 10;
+//                 if (!isNaN(value)) {
+//                   sum = sum + value;
+//                   if (value > result.max) { result.max = value; }
+//                   result.cores.push(value);
+//                 }
+//               });
+//               if (result.cores.length) {
+//                 result.main = sum / result.cores.length;
+//               }
+//             }
+//             if (callback) { callback(result); }
+//             resolve(result);
+//           });
+//         } catch (e) {
+//           if (callback) { callback(result); }
+//           resolve(result);
+//         }
+//       }
+//     });
 //   });
 // }

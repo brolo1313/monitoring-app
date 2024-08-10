@@ -3,10 +3,11 @@ const path = require("path");
 function loadAppUrl(window, localEnv, buildEnv, isLocal) {
   const url = isLocal ? localEnv : buildEnv;
 
-  if (isLocal) {
-    require("electron-reloader")(module);
-    window.webContents.openDevTools();
-  }
+  // if (isLocal) {
+  //   require("electron-reloader")(module);
+  //   window.webContents.openDevTools();
+  // }
+  window.webContents.openDevTools();
   window.loadURL(url).catch((error) => {
     console.error("Failed to load URL:", error);
     // Optionally load a fallback page
