@@ -14,55 +14,53 @@ export class SystemInfoService {
   cpuTemp$ = this.cpuTempSubject.asObservable();
 
   constructor() {
-    // this.socket = new WebSocket('ws://localhost:8080');
+    this.socket = new WebSocket('ws://localhost:8080');
 
-    // this.socket.onopen = () => {
-    //   console.log('Connected to WebSocket server');
-    //   if (this.socket.readyState === WebSocket.OPEN) {
-    //     this.socket.send('get-system-info');
-    //   }
-    // };
+    this.socket.onopen = () => {
+      console.log('Connected to WebSocket server');
+      if (this.socket.readyState === WebSocket.OPEN) {
+        setInterval(() => {
+          this.socket.send('get-system-info');
+        }, 6000);
+      }
+    };
 
-    // this.socket.onmessage = (event) => {
-    //   try {
-    //     const data = JSON.parse(event.data);
-    //     console.log('Message from server:', data);
+    this.socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Message from server:', data);
 
-    //     if (data.gpuData) {
-    //       this.gpuDataSubject.next(data.gpuData);
-    //     }
+        if (data.gpuData) {
+          this.gpuDataSubject.next(data.gpuData);
+        }
 
-    //     if (data.cpuTemp) {
-    //       this.cpuTempSubject.next(data.cpuTemp);
-    //     }
-    //   } catch (error) {
-    //     console.log('Received non-JSON message:', event.data);
-    //   }
-    // };
+        if (data.cpuTemp) {
+          this.cpuTempSubject.next(data.cpuTemp);
+        }
+      } catch (error) {
+        console.log('Received non-JSON message:', event.data);
+      }
+    };
 
-    // this.socket.onclose = () => {
-    //   console.log('Disconnected from WebSocket server');
-    // };
+    this.socket.onclose = () => {
+      console.log('Disconnected from WebSocket server');
+    };
 
-    // this.socket.onerror = (error) => {
-    //   console.error('WebSocket error:', error);
-    // };
+    this.socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
 
     console.log('environment', environment);
   }
 
 
   getSystemInfo(): Promise<any> {
-    if(!window.electronAPI){
+    if (!window.electronAPI) {
       return Promise.resolve(this.getUserMocks());
-    }else {
+    } else {
       return (window as any).electronAPI.getSystemInfo();
 
     }
-  }
-
-  getSystemInfo1() {
-    return window;
   }
 
   getUserMocks() {
@@ -70,5 +68,4 @@ export class SystemInfoService {
       name: 'browser User',
     }
   }
-
 }

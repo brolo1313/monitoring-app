@@ -7,7 +7,7 @@
 <ng-container *ngIf="!isLoading; else loader">
   <div *ngIf="isElectronApp; else browser">
     <div class="gpu-wrapper">
-      <ng-container *ngFor="let item of data?.gpuData?.controllers">
+      <ng-container *ngFor="let item of gpuData?.controllers">
         <div *ngIf="item.vendor == 'NVIDIA'">
           <p class="gpu-name">
             <strong>{{ item.vendor }}</strong>
@@ -21,11 +21,11 @@
 
     <div class="cpu-wrapper">
       <h2>CPU Temperature</h2>
-      <pre>{{ data?.cpuTemp?.main }}°C</pre>
+      <pre>{{ cpuTemp?.main }}°C</pre>
     </div>
   </div>
 </ng-container>
 
-<ng-template #browser> browser data </ng-template>
+<ng-template #browser> mocks data </ng-template>
 <ng-template #loader> Loading... </ng-template>
 

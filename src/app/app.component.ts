@@ -44,31 +44,29 @@ export class AppComponent {
   }
 
   async ngOnInit() {
-    // this.systemInfoService.gpuData$.subscribe(data => {
-    //   this.gpuData = data;
-    //   this.gpuTemperature = data?.controllers[0]?.temperatureGpu;
-    // });
+    this.systemInfoService.gpuData$.subscribe(data => {
+      this.gpuData = data;
+      this.gpuTemperature = data?.controllers[0]?.temperatureGpu;
+    });
 
-    // this.systemInfoService.cpuTemp$.subscribe(temp => {
-    //   this.cpuTemp = temp;
-    // });
-    await this.fetchSystemInfo();
+    this.systemInfoService.cpuTemp$.subscribe(temp => {
+      this.cpuTemp = temp;
+    });
+    // await this.fetchSystemInfo();
     // await this.emitEventToMainProcess();
   }
 
   async fetchSystemInfo() {
-    this.isLoading = true;
-    try {
-      this.data = await this.systemInfoService.getSystemInfo();
-      if (this.data) {
-        this.isLoading = false;
-      }
-    } catch (error) {
-      this.isLoading = false;
-      console.error('Error fetching system info', error);
-    }
-
-    //  this.systemInfoService.sendMessage('get-system-info');
+    // this.isLoading = true;
+    // try {
+    //   this.data = await this.systemInfoService.getSystemInfo();
+    //   if (this.data) {
+    //     this.isLoading = false;
+    //   }
+    // } catch (error) {
+    //   this.isLoading = false;
+    //   console.error('Error fetching system info', error);
+    // }
   }
 
   async emitEventToMainProcess() {
