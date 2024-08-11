@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { SystemInfoService } from './services/system-info-service';
 import { ElectronService } from './services/electron-service';
 import { isElectronMode } from './helpers/helpers';
+import { combineLatest } from 'rxjs';
 
 declare global {
   interface Window {
@@ -23,12 +24,13 @@ export class AppComponent {
   title = 'electron-monitor-app';
 
   public isElectronApp: boolean = false;
-  public isLoading: Boolean = false;
+  public isLoading: boolean = true;
 
   data: any;
 
   gpuData: any;
-  cpuTemp: any;
+  cpuInfo: { temp: any; details: any } = { temp: null, details: null };
+  systemInfo: { system: any; bios: any; users: any } = { system: null, bios: null, users: null };
 
   public gpuTemperature: number = 0;
 
@@ -43,31 +45,63 @@ export class AppComponent {
     }
   }
 
-  async ngOnInit() {
-    this.systemInfoService.gpuData$.subscribe(data => {
-      this.gpuData = data;
-      this.gpuTemperature = data?.controllers[0]?.temperatureGpu;
-    });
-
-    this.systemInfoService.cpuTemp$.subscribe(temp => {
-      this.cpuTemp = temp;
-    });
-    // await this.fetchSystemInfo();
+  ngOnInit() {
+    this.fetchSystemInfo();
     // await this.emitEventToMainProcess();
   }
 
-  async fetchSystemInfo() {
-    // this.isLoading = true;
-    // try {
-    //   this.data = await this.systemInfoService.getSystemInfo();
-    //   if (this.data) {
-    //     this.isLoading = false;
-    //   }
-    // } catch (error) {
-    //   this.isLoading = false;
-    //   console.error('Error fetching system info', error);
-    // }
+  fetchSystemInfo() {
+    this.isLoading = true;
+
+    combineLatest([
+      this.systemInfoService.gpuData$,
+      this.systemInfoService.cpuTemp$,
+      this.systemInfoService.system$,
+      this.systemInfoService.mem$,
+      this.systemInfoService.cpu$,
+      this.systemInfoService.bios$,
+      this.systemInfoService.users$
+    ]).subscribe({
+      next: ([gpuData, cpuTemp, system, mem, cpu, bios, users]) => {
+        // Organize CPU-related data
+        this.cpuInfo = {
+          temp: cpuTemp,
+          details: cpu
+        };
+
+        // Organize system-related data
+        this.systemInfo = {
+          system: system,
+          bios: bios,
+          users: users
+        };
+
+        // Handle GPU data
+        if (gpuData) {
+          this.gpuData = gpuData;
+          this.gpuTemperature = gpuData?.controllers[0]?.temperatureGpu;
+        }
+
+        // Set isLoading to false only if all critical data is valid
+        if (gpuData && cpuTemp && system && cpu && bios && users) {
+          this.isLoading = false;
+        } else {
+          console.log('Incomplete data received:', {
+            gpuData,
+            cpuTemp,
+            system,
+            cpu,
+            bios: users
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching system info:', err);
+        this.isLoading = false;  // Ensure isLoading is false even on error
+      }
+    });
   }
+
 
   async emitEventToMainProcess() {
     const response = await window.versions.ping()

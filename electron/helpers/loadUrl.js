@@ -3,11 +3,11 @@ const path = require("path");
 function loadAppUrl(window, localEnv, buildEnv, isLocal) {
   const url = isLocal ? localEnv : buildEnv;
 
-  // if (isLocal) {
-  //   require("electron-reloader")(module);
-  //   window.webContents.openDevTools();
-  // }
-  window.webContents.openDevTools();
+  if (isLocal) {
+    require("electron-reloader")(module);
+    window.webContents.openDevTools();
+  }
+
   window.loadURL(url).catch((error) => {
     console.error("Failed to load URL:", error);
     // Optionally load a fallback page
@@ -16,7 +16,7 @@ function loadAppUrl(window, localEnv, buildEnv, isLocal) {
 }
 
 function getEnvUrls() {
-  const isLocalTest = process.env.npm_lifecycle_event === "test-local";
+  const isLocalTest = process.env.npm_lifecycle_event === "test-local-both";
   const localEnv = "http://localhost:4200";
   const buildEnv = `file://${path.join(
     __dirname,

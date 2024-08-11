@@ -1,10 +1,5 @@
-
-<div>
-  <span>{{  isElectronApp ? "desktop agent" : "browser agent" }}</span>
-</div>
-
-<h1>System Information test1</h1>
 <ng-container *ngIf="!isLoading; else loader">
+  <h1>System Information test</h1>
   <div *ngIf="isElectronApp; else browser">
     <div class="gpu-wrapper">
       <ng-container *ngFor="let item of gpuData?.controllers">
@@ -12,7 +7,7 @@
           <p class="gpu-name">
             <strong>{{ item.vendor }}</strong>
           </p>
-          <p class="gpu-temparature">
+          <p class="gpu-temperature">
             <strong>{{ item.temperatureGpu }}&#8451;</strong>
           </p>
         </div>
@@ -21,11 +16,17 @@
 
     <div class="cpu-wrapper">
       <h2>CPU Temperature</h2>
-      <pre>{{ cpuTemp?.main }}°C</pre>
+      <pre>{{ cpuInfo?.temp?.main }}°C</pre>
     </div>
   </div>
 </ng-container>
 
-<ng-template #browser> mocks data </ng-template>
-<ng-template #loader> Loading... </ng-template>
+<ng-template #loader>
+  <div class="loading-indicator">
+    Loading system information...
+  </div>
+</ng-template>
 
+<ng-template #browser>
+  <p>This application is running in a web browser.</p>
+</ng-template>
