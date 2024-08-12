@@ -6,10 +6,10 @@ const path = require("path");
 const WebSocket = require("ws");
 const si = require("systeminformation");
 const { loadAppUrl, getEnvUrls } = require("./helpers/loadUrl");
+const { logWithColor } = require("./helpers/functions");
 const EventEmitter = require("events");
 const eventEmitter = new EventEmitter();
 const { exec } = require('child_process');
-
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -65,6 +65,7 @@ try {
     if (process.platform !== "darwin") {
       electron_1.app.quit();
     }
+    logWithColor('app exit', 'red');
   });
   app.on("activate", () => {
     // On OS X it's common to re-create a window in the app when the
@@ -74,7 +75,7 @@ try {
     }
   });
 } catch (e) {
-  console.log("App window error was occurred", e);
+  logWithColor('App window error was occurred', 'red');
   throw e;
 }
 
@@ -93,26 +94,25 @@ async function getSystemInfo(connection) {
 
     connection.send(JSON.stringify({ gpuData, cpuTemp, currentLoad, cpu, cpuCurrentSpeed ,mem, users, system, bios }));
   } catch (error) {
-    console.log("getSystemInfo has error", error);
+    logWithColor('getSystemInfo has error', 'red', error);
     connection.send('{"error": "Failed to retrieve system information"}');
   }
 }
 
 function webSocketInit() {
-  console.log("webSocketInit run");
-  // WebSocket server
+  logWithColor('webSocketInit run', 'green');
   const wss = new WebSocket.Server({ port: 8080 });
 
   wss.on("connection", (ws) => {
-    console.log("New client connected");
+    logWithColor('New client connected', 'yellow');
 
     ws.on("message", async (message) => {
       const messageStr = message.toString(); // Convert Buffer to string
       if (messageStr === "get-system-info") {
-        console.log("messageStr", messageStr);
         getSystemInfo(ws);
       } else {
         ws.send("Invalid request");
+        logWithColor('webSocketInit run', 'red');
       }
     });
 
@@ -129,3 +129,5 @@ function webSocketInit() {
 //         date: new Date(),
 //       };
 //     });
+
+
