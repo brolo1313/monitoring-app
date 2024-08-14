@@ -31,23 +31,21 @@
   <p>This application is running in a web browser.</p>
 </ng-template> -->
 
-<main class="bento">
-  <div class="bento__container" variant-1>
-    <div class="bento__item" style="--rows: span 6 / -1; --columns: -1 / 3">
-      <h3>variant-3.1</h3>
-    </div>
-    <!-- <div class="bento__item"> variant-1.1</div> -->
+<div class="bento__container">
+  <div class="bento__item bento__item-1">
+    <h3>variant-3.1</h3>
   </div>
-
-  <div class="bento__container" variant-2>
-    <div *ngFor="let item of items" class="bento__item" [ngStyle]="item.style">
+  <ng-container *ngFor="let item of items">
+    <div class="bento__item" [ngClass]="item.class" >
       <h3>{{ item.content }}</h3>
+      <img
+        class="img-cpu"
+        src="../assets/icons/cpu-free-material-2-svgrepo-com.svg"
+        alt=""
+      />
     </div>
+  </ng-container>
+  <div class="bento__item bento__item-8">
+    <h3>variant-3.1</h3>
   </div>
-  <div class="bento__container" variant-3>
-    <!-- <div class="bento__item" style="--rows: span 1 / -3; --columns: 3 / 1;">variant-3.1</div> -->
-    <div class="bento__item">
-      <h3>variant-3.1</h3>
-    </div>
-  </div>
-</main>
+</div>

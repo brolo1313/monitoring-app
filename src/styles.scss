@@ -1,1 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+@import "styles/_normalize";
+
+body {
+  display: grid;
+  place-content: center;
+  background-color: #101010;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  height: 100vh;
+}
