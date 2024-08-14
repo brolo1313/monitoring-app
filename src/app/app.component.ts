@@ -23,6 +23,15 @@ declare global {
 export class AppComponent {
   title = 'electron-monitor-app';
 
+  items = [
+    { content: 'variant-2.1', style: { '--columns': 'span 2' } },
+    { content: 'variant-2.2', style: { '--columns': 'span 2' } },
+    { content: 'variant-2.3', style: { '--rows': 'span 4', '--columns': '1 / -1' } },
+    { content: 'variant-2.4', style: {} },
+    { content: 'variant-2.5', style: { '--columns': 'span 2' } },
+    { content: 'variant-2.6', style: {} },
+  ];
+
   public isElectronApp: boolean = false;
   public isLoading: boolean = true;
 
