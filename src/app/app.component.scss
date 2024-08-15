@@ -20,6 +20,7 @@ img {
 
 .bento__container {
   max-width: 900px;
+  height: 500px;
   margin: 1rem;
   display: grid;
   grid-auto-columns: 1fr;
@@ -77,4 +78,8 @@ img {
       fill: red;
     }
   }
+}
+
+.loading-indicator {
+  color: #fff;
 }

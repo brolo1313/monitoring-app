@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -7,9 +7,12 @@ interface SystemData {
   gpuData: {},
   mem: {},
   system: {},
-  cpuTemp: {},
+  currentLoad: {},
   users: [],
-  cpu: {}
+  cpu: {},
+  battery: {},
+  osInfo: {},
+  wifiConnections: [],
 }
 
 @Injectable({
@@ -18,21 +21,30 @@ interface SystemData {
 export class SystemInfoService {
   private socket!: WebSocket;
   private gpuDataSubject = new BehaviorSubject<any>(null);
-  private cpuTempSubject = new BehaviorSubject<any>(null);
+  private currentLoad = new BehaviorSubject<any>(null);
   private biosSubject = new BehaviorSubject<any>(null);
   private cpuSubject = new BehaviorSubject<any>(null);
   private memSubject = new BehaviorSubject<any>(null);
   private systemSubject = new BehaviorSubject<any>(null);
+  private batterySubject = new BehaviorSubject<any>(null);
   private usersSubject = new BehaviorSubject<any>(null);
+  private osInfoSubject = new BehaviorSubject<any>(null);
+  private wifiConnectionsSubject = new BehaviorSubject<any>(null);
 
+  
+  private intervalId: any;
 
   gpuData$ = this.gpuDataSubject.asObservable();
-  cpuTemp$ = this.cpuTempSubject.asObservable();
+  currentLoad$ = this.currentLoad.asObservable();
   bios$ = this.biosSubject.asObservable();
   cpu$ = this.cpuSubject.asObservable();
   mem$ = this.memSubject.asObservable();
   system$ = this.systemSubject.asObservable();
+  battery$ = this.batterySubject.asObservable();
   users$ = this.usersSubject.asObservable();
+  osInfo$ = this.osInfoSubject.asObservable();
+  wifiConnections$ = this.wifiConnectionsSubject.asObservable();
+  
 
   constructor() {
     this.socket = new WebSocket('ws://localhost:8080');
@@ -40,7 +52,7 @@ export class SystemInfoService {
     this.socket.onopen = () => {
       console.log('Connected to WebSocket server');
       if (this.socket.readyState === WebSocket.OPEN) {
-        setInterval(() => {
+        this.intervalId = setInterval(() => {
           this.socket.send('get-system-info');
         }, 6000);
       }
@@ -55,8 +67,8 @@ export class SystemInfoService {
           this.gpuDataSubject.next(data.gpuData);
         }
 
-        if (data?.cpuTemp) {
-          this.cpuTempSubject.next(data.cpuTemp);
+        if (data?.currentLoad) {
+          this.currentLoad.next(data.currentLoad);
         }
 
         if (data?.bios) {
@@ -69,6 +81,18 @@ export class SystemInfoService {
 
         if (data?.system) {
           this.systemSubject.next(data.system);
+        }
+
+        if (data?.osInfo) {
+          this.osInfoSubject.next(data.osInfo);
+        }
+
+        if (data?.battery) {
+          this.batterySubject.next(data.battery);
+        }
+
+        if (data?.wifiConnections) {
+          this.wifiConnectionsSubject.next(data.wifiConnections);
         }
 
         if (data?.users) {
@@ -101,6 +125,19 @@ export class SystemInfoService {
     } else {
       return (window as any).electronAPI.getSystemInfo();
 
+    }
+  }
+
+
+  closeSocket(): void {
+    this.clearSocketInterval();
+    this.socket.close();
+  }
+
+  private clearSocketInterval(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
     }
   }
 

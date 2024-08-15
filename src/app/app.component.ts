@@ -5,6 +5,7 @@ import { SystemInfoService } from './services/system-info-service';
 import { ElectronService } from './services/electron-service';
 import { isElectronMode } from './helpers/helpers';
 import { combineLatest } from 'rxjs';
+import { IBatteryInfo, IBios, ICoresLoading, ICpuDetails, IGpuData, IMemoryInfo, IOsInfo, ISystem, IUser, IWifiConnections } from './models/system-data.models';
 
 declare global {
   interface Window {
@@ -24,24 +25,25 @@ export class AppComponent {
   title = 'electron-monitor-app';
 
   items = [
-    {class: 'bento__item-2', content: 'variant-2.1'},
-    {class: 'bento__item-3', content: 'variant-2.2'},
-    {class: 'bento__item-4', content: 'variant-2.3'},
-    {class: 'bento__item-5', content: 'variant-2.4'},
-    {class: 'bento__item-6', content: 'variant-2.5'},
-    {class: 'bento__item-7', content: 'variant-2.6'},
+    { class: 'bento__item-2', content: 'variant-2.1' },
+    { class: 'bento__item-3', content: 'variant-2.2' },
+    { class: 'bento__item-4', content: 'variant-2.3' },
+    { class: 'bento__item-5', content: 'variant-2.4' },
+    { class: 'bento__item-6', content: 'variant-2.5' },
+    { class: 'bento__item-7', content: 'variant-2.6' },
   ];
 
   public isElectronApp: boolean = false;
   public isLoading: boolean = true;
+  public isDataReceived: boolean = false;
 
-  data: any;
-
-  gpuData: any;
-  cpuInfo: { temp: any; details: any } = { temp: null, details: null };
-  systemInfo: { system: any; bios: any; users: any } = { system: null, bios: null, users: null };
-
-  public gpuTemperature: number = 0;
+  gpuData!: IGpuData;
+  memory!: IMemoryInfo;
+  osInfo!: IOsInfo;
+  battery!: IBatteryInfo;
+  wifiConnections!: IWifiConnections;
+  cpuInfo!: { details: ICpuDetails, coresLoading: ICoresLoading };
+  systemInfo!: { system: ISystem; bios: IBios; users: IUser };
 
   constructor(private systemInfoService: SystemInfoService,
     private electronService: ElectronService,
@@ -61,60 +63,70 @@ export class AppComponent {
 
   fetchSystemInfo() {
     this.isLoading = true;
-
+  
     combineLatest([
       this.systemInfoService.gpuData$,
-      this.systemInfoService.cpuTemp$,
+      this.systemInfoService.currentLoad$,
       this.systemInfoService.system$,
       this.systemInfoService.mem$,
       this.systemInfoService.cpu$,
       this.systemInfoService.bios$,
-      this.systemInfoService.users$
+      this.systemInfoService.users$,
+      this.systemInfoService.osInfo$,
+      this.systemInfoService.battery$,
+      this.systemInfoService.wifiConnections$,
     ]).subscribe({
-      next: ([gpuData, cpuTemp, system, mem, cpu, bios, users]) => {
-        // Organize CPU-related data
+      next: ([gpuData, currentLoad, system, mem, cpu, bios, users, osInfo, battery, wifiConnections]) => {
         this.cpuInfo = {
-          temp: cpuTemp,
-          details: cpu
+          coresLoading: currentLoad,
+          details: cpu,
         };
-
-        // Organize system-related data
+  
+        this.memory = mem;
+  
         this.systemInfo = {
           system: system,
           bios: bios,
-          users: users
+          users: users,
         };
-
-        // Handle GPU data
-        if (gpuData) {
-          this.gpuData = gpuData;
-          this.gpuTemperature = gpuData?.controllers[0]?.temperatureGpu;
+  
+        this.osInfo = osInfo;
+        this.battery = battery;
+        this.gpuData = gpuData;
+        this.wifiConnections = wifiConnections;
+  
+        // Check if all data has been received
+        if (gpuData && system && cpu && bios && users && mem && osInfo && battery && wifiConnections) {
+          this.isLoading = false;
+          this.isDataReceived = true;
+          console.log('data received:', {
+            gpuData: this.gpuData,
+            cpuInfo: this.cpuInfo,
+            systemInfo: this.systemInfo,
+          });
         }
 
-        // Set isLoading to false only if all critical data is valid
-        if (gpuData && cpuTemp && system && cpu && bios && users) {
-          this.isLoading = false;
-        } else {
-          console.log('Incomplete data received:', {
-            gpuData,
-            cpuTemp,
-            system,
-            cpu,
-            bios: users
-          });
+
+        if(!gpuData || !system || !cpu || !bios || !users || !mem || !osInfo || !battery || !wifiConnections){
+          console.log('some data not been received');
         }
       },
       error: (err) => {
         console.error('Error fetching system info:', err);
-        this.isLoading = false;  // Ensure isLoading is false even on error
-      }
+        this.isLoading = false; // Ensure isLoading is false even on error
+      },
     });
   }
+  
 
 
   async emitEventToMainProcess() {
     const response = await window.versions.ping()
     console.log('come from main process:', response) // prints out 'pong'
+  }
+
+  closeSocket(): void {
+    this.systemInfoService.closeSocket();
   }
 
 }

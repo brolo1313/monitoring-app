@@ -83,16 +83,17 @@ try {
 async function getSystemInfo(connection) {
   try {
     const gpuData = await si.graphics();
-    const cpuTemp = await si.cpuTemperature();
     const currentLoad = await si.currentLoad();
     const mem = await si.mem();
     const cpu = await si.cpu();
-    const cpuCurrentSpeed = await si.cpuCurrentSpeed();
     const users = await si.users();
     const system = await si.system();
+    const osInfo = await si.osInfo();
+    const battery = await si.battery();
+    const wifiConnections = await si.wifiConnections();
     const bios = await si.bios();
 
-    connection.send(JSON.stringify({ gpuData, cpuTemp, currentLoad, cpu, cpuCurrentSpeed ,mem, users, system, bios }));
+    connection.send(JSON.stringify({ gpuData, currentLoad, cpu ,mem, users, system, osInfo, battery, wifiConnections, bios }));
   } catch (error) {
     logWithColor('getSystemInfo has error', 'red', error);
     connection.send('{"error": "Failed to retrieve system information"}');

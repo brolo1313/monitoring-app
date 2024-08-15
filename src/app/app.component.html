@@ -31,21 +31,33 @@
   <p>This application is running in a web browser.</p>
 </ng-template> -->
 
-<div class="bento__container">
-  <div class="bento__item bento__item-1">
-    <h3>variant-3.1</h3>
-  </div>
-  <ng-container *ngFor="let item of items">
-    <div class="bento__item" [ngClass]="item.class" >
-      <h3>{{ item.content }}</h3>
+<ng-container *ngIf="isDataReceived && !isLoading; else loader">
+<button (click)="closeSocket()">close socket</button>
+
+  <div class="bento__container">
+    <div class="bento__item bento__item-1">
+      <h3>{{ this.cpuInfo?.details?.brand }}</h3>
+      <span>cores:{{ this.cpuInfo?.details?.cores }}</span>
       <img
         class="img-cpu"
         src="../assets/icons/cpu-free-material-2-svgrepo-com.svg"
         alt=""
       />
     </div>
-  </ng-container>
-  <div class="bento__item bento__item-8">
-    <h3>variant-3.1</h3>
+    <ng-container *ngFor="let item of items">
+      <div class="bento__item" [ngClass]="item.class">
+        <h3>{{ item.content }}</h3>
+      </div>
+    </ng-container>
+    <div class="bento__item bento__item-8">
+      <h3>variant-3.1</h3>
+    </div>
   </div>
-</div>
+</ng-container>
+
+
+<ng-template #loader>
+  <div class="loading-indicator">
+    Loading system information...
+  </div>
+</ng-template>
