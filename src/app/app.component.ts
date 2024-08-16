@@ -6,6 +6,7 @@ import { ElectronService } from './services/electron-service';
 import { isElectronMode } from './helpers/helpers';
 import { combineLatest } from 'rxjs';
 import { IBatteryInfo, IBios, ICoresLoading, ICpuDetails, IGpuData, IMemoryInfo, IOsInfo, ISystem, IUser, IWifiConnections } from './models/system-data.models';
+import { system_mocks } from './mocks';
 
 declare global {
   interface Window {
@@ -33,6 +34,8 @@ export class AppComponent {
     { class: 'bento__item-7', content: 'variant-2.6' },
   ];
 
+  private data = system_mocks;
+
   public isElectronApp: boolean = false;
   public isLoading: boolean = true;
   public isDataReceived: boolean = false;
@@ -57,7 +60,13 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.fetchSystemInfo();
+    console.log('ngOnInit',this.data);
+    const {gpuData, cpuInfo, systemInfo } = this.data;
+    this.gpuData = gpuData;
+    this.cpuInfo = cpuInfo as any;
+    this.systemInfo = systemInfo as any;
+
+    // this.fetchSystemInfo();
     // await this.emitEventToMainProcess();
   }
 

@@ -18,6 +18,10 @@ img {
   width: 50px;
 }
 
+.img-core {
+  width: 50px;
+}
+
 .bento__container {
   max-width: 900px;
   height: 500px;
@@ -45,6 +49,10 @@ img {
 
 .bento__item-1 {
   grid-area: box-1;
+
+  h3{
+    margin-top: 0;
+  }
 }
 .bento__item-2 {
   grid-area: box-2;

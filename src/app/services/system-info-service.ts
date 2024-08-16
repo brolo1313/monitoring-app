@@ -31,7 +31,7 @@ export class SystemInfoService {
   private osInfoSubject = new BehaviorSubject<any>(null);
   private wifiConnectionsSubject = new BehaviorSubject<any>(null);
 
-  
+
   private intervalId: any;
 
   gpuData$ = this.gpuDataSubject.asObservable();
@@ -44,9 +44,13 @@ export class SystemInfoService {
   users$ = this.usersSubject.asObservable();
   osInfo$ = this.osInfoSubject.asObservable();
   wifiConnections$ = this.wifiConnectionsSubject.asObservable();
-  
+
 
   constructor() {
+    // this.initWebSocket();
+  }
+
+  initWebSocket() {
     this.socket = new WebSocket('ws://localhost:8080');
 
     this.socket.onopen = () => {
@@ -117,7 +121,6 @@ export class SystemInfoService {
 
     console.log('environment', environment);
   }
-
 
   getSystemInfo(): Promise<any> {
     if (!window.electronAPI) {

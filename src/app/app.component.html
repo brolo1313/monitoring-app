@@ -31,13 +31,18 @@
   <p>This application is running in a web browser.</p>
 </ng-template> -->
 
-<ng-container *ngIf="isDataReceived && !isLoading; else loader">
-<button (click)="closeSocket()">close socket</button>
+<!-- isDataReceived && !isLoading -->
+<ng-container *ngIf="true; else loader">
+  <button (click)="closeSocket()">close socket</button>
 
   <div class="bento__container">
     <div class="bento__item bento__item-1">
       <h3>{{ this.cpuInfo?.details?.brand }}</h3>
-      <span>cores:{{ this.cpuInfo?.details?.cores }}</span>
+      <span
+        ><img class="img-core" src="../assets/icons/cpu-core.svg" alt="" />{{
+          this.cpuInfo?.details?.cores
+        }}</span
+      >
       <img
         class="img-cpu"
         src="../assets/icons/cpu-free-material-2-svgrepo-com.svg"
@@ -55,9 +60,6 @@
   </div>
 </ng-container>
 
-
 <ng-template #loader>
-  <div class="loading-indicator">
-    Loading system information...
-  </div>
+  <div class="loading-indicator">Loading system information...</div>
 </ng-template>
