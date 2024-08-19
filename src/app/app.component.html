@@ -33,8 +33,6 @@
 
 <!-- isDataReceived && !isLoading -->
 <ng-container *ngIf="true; else loader">
-  <button (click)="closeSocket()">close socket</button>
-
   <div class="bento__container">
     <div class="bento__item bento__item-1">
       <h3>{{ this.cpuInfo?.details?.brand }}</h3>

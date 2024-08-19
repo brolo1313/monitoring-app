@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { SystemInfoService } from './services/system-info-service';
@@ -12,6 +12,7 @@ declare global {
   interface Window {
     versions: any;
     electronAPI: any;
+    electron: any;
   }
 }
 
@@ -50,6 +51,7 @@ export class AppComponent {
 
   constructor(private systemInfoService: SystemInfoService,
     private electronService: ElectronService,
+    private cdRef: ChangeDetectorRef
   ) {
     this.isElectronApp = isElectronMode();
     if (this.isElectronApp) {
@@ -65,14 +67,14 @@ export class AppComponent {
     this.gpuData = gpuData;
     this.cpuInfo = cpuInfo as any;
     this.systemInfo = systemInfo as any;
-
     // this.fetchSystemInfo();
     // await this.emitEventToMainProcess();
   }
 
   fetchSystemInfo() {
+    this.systemInfoService.fetchDataFromELectron();
     this.isLoading = true;
-  
+    
     combineLatest([
       this.systemInfoService.gpuData$,
       this.systemInfoService.currentLoad$,
@@ -108,11 +110,7 @@ export class AppComponent {
         if (gpuData && system && cpu && bios && users && mem && osInfo && battery && wifiConnections) {
           this.isLoading = false;
           this.isDataReceived = true;
-          console.log('data received:', {
-            gpuData: this.gpuData,
-            cpuInfo: this.cpuInfo,
-            systemInfo: this.systemInfo,
-          });
+          this.cdRef.detectChanges();
         }
 
 
@@ -132,10 +130,6 @@ export class AppComponent {
   async emitEventToMainProcess() {
     const response = await window.versions.ping()
     console.log('come from main process:', response) // prints out 'pong'
-  }
-
-  closeSocket(): void {
-    this.systemInfoService.closeSocket();
   }
 
 }

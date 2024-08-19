@@ -47,26 +47,13 @@ export class SystemInfoService {
 
 
   constructor() {
-    // this.initWebSocket();
   }
 
-  initWebSocket() {
-    this.socket = new WebSocket('ws://localhost:8080');
 
-    this.socket.onopen = () => {
-      console.log('Connected to WebSocket server');
-      if (this.socket.readyState === WebSocket.OPEN) {
-        this.intervalId = setInterval(() => {
-          this.socket.send('get-system-info');
-        }, 6000);
-      }
-    };
-
-    this.socket.onmessage = (event) => {
-      try {
-        const data: SystemData = JSON.parse(event.data);
-        console.log('Message from server:', data);
-
+  fetchDataFromELectron(){
+    if (window['electron']) {
+      window['electron'].ipcRenderer.on('gpu-temperature', (data: any) => {
+        // console.log('SystemInfoService get data', data);
         if (data?.gpuData) {
           this.gpuDataSubject.next(data.gpuData);
         }
@@ -106,20 +93,8 @@ export class SystemInfoService {
         if (data?.cpu) {
           this.cpuSubject.next(data.cpu);
         }
-      } catch (error) {
-        console.log('Received non-JSON message:', event.data);
-      }
-    };
-
-    this.socket.onclose = () => {
-      console.log('Disconnected from WebSocket server');
-    };
-
-    this.socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    console.log('environment', environment);
+      });
+    }
   }
 
   getSystemInfo(): Promise<any> {
@@ -128,19 +103,6 @@ export class SystemInfoService {
     } else {
       return (window as any).electronAPI.getSystemInfo();
 
-    }
-  }
-
-
-  closeSocket(): void {
-    this.clearSocketInterval();
-    this.socket.close();
-  }
-
-  private clearSocketInterval(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
     }
   }
 

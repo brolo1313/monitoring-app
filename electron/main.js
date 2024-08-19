@@ -11,8 +11,10 @@ const EventEmitter = require("events");
 const eventEmitter = new EventEmitter();
 const { exec } = require('child_process');
 
+let mainWindow; // Define win globally
+
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -54,7 +56,8 @@ try {
 
     eventEmitter.on("windowReady", () => {
       // getSystemInfo();
-      webSocketInit();
+      // webSocketInit();
+      startMonitoring();
     });
   });
 
@@ -79,6 +82,34 @@ try {
   throw e;
 }
 
+ipcMain.on('get-gpu-temperature', async (event) => {
+  const gpuData = await si.graphics();
+  event.reply('gpu-temperature', gpuData);
+});
+
+async function startMonitoring() {
+  console.log('startMonitoring start');
+  setInterval(async () => {
+    const gpuData = await si.graphics();
+    const currentLoad = await si.currentLoad();
+    const mem = await si.mem();
+    const cpu = await si.cpu();
+    const users = await si.users();
+    const system = await si.system();
+    const osInfo = await si.osInfo();
+    const battery = await si.battery();
+    const wifiConnections = await si.wifiConnections();
+    const bios = await si.bios();
+    console.log('setInterval works');
+
+    const result = {
+      gpuData, currentLoad, cpu ,mem, users, system, osInfo, battery, wifiConnections, bios
+    }
+
+    mainWindow.webContents.send('gpu-temperature', result);
+  }, 20000);
+}
+
 
 async function getSystemInfo(connection) {
   try {
@@ -99,28 +130,6 @@ async function getSystemInfo(connection) {
     connection.send('{"error": "Failed to retrieve system information"}');
   }
 }
-
-function webSocketInit() {
-  logWithColor('webSocketInit run', 'green');
-  const wss = new WebSocket.Server({ port: 8080 });
-
-  wss.on("connection", (ws) => {
-    logWithColor('New client connected', 'yellow');
-
-    ws.on("message", async (message) => {
-      const messageStr = message.toString(); // Convert Buffer to string
-      if (messageStr === "get-system-info") {
-        getSystemInfo(ws);
-      } else {
-        ws.send("Invalid request");
-        logWithColor('webSocketInit run', 'red');
-      }
-    });
-
-    ws.send('{"message": "Connected to WebSocket server"}'); // Send JSON format
-  });
-}
-
 
 //logic to get event  from client
 //   ipcMain.handle("ping", () => {
