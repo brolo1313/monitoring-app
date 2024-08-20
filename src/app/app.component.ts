@@ -7,6 +7,7 @@ import { isElectronMode } from './helpers/helpers';
 import { combineLatest } from 'rxjs';
 import { IBatteryInfo, IBios, ICoresLoading, ICpuDetails, IGpuData, IMemoryInfo, IOsInfo, ISystem, IUser, IWifiConnections } from './models/system-data.models';
 import { system_mocks } from './mocks';
+import { RoundMath } from './helpers/math-round.pipe';
 
 declare global {
   interface Window {
@@ -19,9 +20,9 @@ declare global {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RoundMath],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'electron-monitor-app';
@@ -63,11 +64,11 @@ export class AppComponent {
 
   ngOnInit() {
     console.log('ngOnInit',this.data);
-    const {gpuData, cpuInfo, systemInfo } = this.data;
-    this.gpuData = gpuData;
-    this.cpuInfo = cpuInfo as any;
-    this.systemInfo = systemInfo as any;
-    // this.fetchSystemInfo();
+    // const {gpuData, cpuInfo, systemInfo } = this.data;
+    // this.gpuData = gpuData;
+    // this.cpuInfo = cpuInfo as any;
+    // this.systemInfo = systemInfo as any;
+    this.fetchSystemInfo();
     // await this.emitEventToMainProcess();
   }
 
