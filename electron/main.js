@@ -57,7 +57,7 @@ try {
     eventEmitter.on("windowReady", () => {
       // getSystemInfo();
       // webSocketInit();
-      startMonitoring();
+      // startMonitoring();
     });
   });
 

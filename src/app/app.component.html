@@ -36,22 +36,21 @@
   <div class="bento__container">
     <div class="bento__item bento__item-1">
       <h3>{{ this.cpuInfo?.details?.brand }}</h3>
-      <div class="image-wrapper">
-        <span> cores: {{ this.cpuInfo?.details?.cores }} </span>
-        <img
-          class="img-cpu"
-          src="../assets/icons/cpu-free-material-2-svgrepo-com.svg"
-          alt=""
-        />
-      </div>
+      <img
+        class="img-cpu"
+        src="../assets/icons/cpu-free-material-2-svgrepo-com.svg"
+        alt=""
+      />
 
-      <ng-container
-        *ngFor="let core of cpuInfo?.coresLoading?.cpus; let i = index"
-      >
-        <p class="m-5">
-          Core {{ i + 1 }}: <span>{{ core?.loadSystem | round }}%</span>
-        </p>
-      </ng-container>
+      <div class="cores-wrapper">
+        <ng-container
+          *ngFor="let core of cpuInfo?.coresLoading?.cpus; let i = index"
+        >
+          <p class="core-item">
+            Core {{ i + 1 }}: <span>{{ core?.loadSystem | round }}%</span>
+          </p>
+        </ng-container>
+      </div>
     </div>
     <ng-container *ngFor="let item of items">
       <div class="bento__item" [ngClass]="item.class">

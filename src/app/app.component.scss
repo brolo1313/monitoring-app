@@ -98,15 +98,23 @@ img {
   margin: 0;
 }
 
-.m-5{
+.cores-wrapper{
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.core-item{
   margin: 5px;
+  width: 100%;
+  max-width: 100px;
 }
 
 p {
   color: antiquewhite;
 }
 
-.image-wrapper{
+.flex-center{
   display: flex;
   justify-content: center;
   align-items: center;

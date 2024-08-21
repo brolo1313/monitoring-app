@@ -64,11 +64,16 @@ export class AppComponent {
 
   ngOnInit() {
     console.log('ngOnInit',this.data);
-    // const {gpuData, cpuInfo, systemInfo } = this.data;
-    // this.gpuData = gpuData;
-    // this.cpuInfo = cpuInfo as any;
-    // this.systemInfo = systemInfo as any;
-    this.fetchSystemInfo();
+    const {gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections, osInfo } = this.data;
+    this.gpuData = gpuData;
+    this.cpuInfo = cpuInfo as any;
+    this.systemInfo = systemInfo as any;
+    this.memory = memory as any;
+    this.battery = battery as any;
+    this.wifiConnections = wifiConnections as any;
+    this.osInfo = osInfo as any;
+
+    // this.fetchSystemInfo();
     // await this.emitEventToMainProcess();
   }
 

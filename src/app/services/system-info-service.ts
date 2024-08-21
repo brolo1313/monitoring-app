@@ -53,7 +53,7 @@ export class SystemInfoService {
   fetchDataFromELectron(){
     if (window['electron']) {
       window['electron'].ipcRenderer.on('gpu-temperature', (data: any) => {
-        // console.log('SystemInfoService get data', data);
+        console.log('SystemInfoService get data', data);
         if (data?.gpuData) {
           this.gpuDataSubject.next(data.gpuData);
         }
