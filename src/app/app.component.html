@@ -1,65 +1,65 @@
-<!-- <ng-container *ngIf="!isLoading; else loader">
-  <h1>System Information test</h1>
-  <div *ngIf="isElectronApp; else browser">
-    <div class="gpu-wrapper">
-      <ng-container *ngFor="let item of gpuData?.controllers">
-        <div *ngIf="item.vendor == 'NVIDIA'">
-          <p class="gpu-name">
-            <strong>{{ item.vendor }}</strong>
-          </p>
-          <p class="gpu-temperature">
-            <strong>{{ item.temperatureGpu }}&#8451;</strong>
-          </p>
-        </div>
-      </ng-container>
-    </div>
-
-    <div class="cpu-wrapper">
-      <h2>CPU Temperature</h2>
-      <pre>{{ cpuInfo?.temp?.main }}°C</pre>
-    </div>
-  </div>
-</ng-container>
-
 <ng-template #loader>
-  <div class="loading-indicator">
-    Loading system information...
-  </div>
+  <app-loader></app-loader>
 </ng-template>
-
-<ng-template #browser>
-  <p>This application is running in a web browser.</p>
-</ng-template> -->
 
 <!-- isDataReceived && !isLoading -->
 <ng-container *ngIf="true; else loader">
   <div class="bento__container">
     <div class="bento__item bento__item-1">
-      <h3>{{ this.cpuInfo?.details?.brand }}</h3>
-      <img
-        class="img-cpu"
-        src="../assets/icons/cpu-free-material-2-svgrepo-com.svg"
-        alt=""
-      />
+      <h3>{{ cpuInfo?.details?.brand }}</h3>
+      <div class="image-wrapper">
+        <img src="../assets/icons/cpu.svg" alt="" />
+      </div>
 
       <div class="cores-wrapper">
-        <ng-container
+        <div
+          class="core-item"
           *ngFor="let core of cpuInfo?.coresLoading?.cpus; let i = index"
         >
-          <p class="core-item">
-            Core {{ i + 1 }}: <span>{{ core?.loadSystem | round }}%</span>
-          </p>
-        </ng-container>
+          <p>Core {{ i + 1 }}:</p>
+          <p>{{ core?.loadSystem | round }}%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bento__item bento__item-2">
+      <h3>{{ gpuData.controllers[0].model }}</h3>
+      <small>{{ gpuData.controllers[0].driverVersion }}V</small>
+      <p>{{ gpuData.controllers[0].temperatureGpu }}&deg;</p>
+      <div class="image-wrapper">
+        <img src="../assets/icons/gpu.svg" alt="" />
       </div>
     </div>
     <ng-container *ngFor="let item of items">
       <div class="bento__item" [ngClass]="item.class">
-        <h3>{{ item.content }}</h3>
+        <ng-container *ngIf="item.type === type.wifiConnections">
+          <h3>{{ item.wifiConnections[0].ssid }}</h3>
+          <small>channel: {{ item.wifiConnections[0].channel }}</small>
+          <small>signal Level: {{ item.wifiConnections[0].signalLevel }}</small>
+          <small>type: {{ item.wifiConnections[0].type }}</small>
+        </ng-container>
+
+        <ng-container *ngIf="item.type === type.battery">
+          <h3>BATTERY</h3>
+          <small>model: {{ item.battery.model }}</small>
+          <small>percent: {{ item.battery.percent }}%</small>
+          <small>voltage: {{ item.battery.voltage }}V</small>
+          <small>capacity: {{ item.battery.maxCapacity }}{{item.battery.capacityUnit}}</small>
+        </ng-container>
+
+        <ng-container *ngIf="item.type === type.memory">
+          <h3>RAM</h3>
+          <small>total: {{ item.memory.total }}</small>
+          <small>used: {{ item.memory.used }}</small>
+        </ng-container>
+
+        <ng-container *ngIf="item.type === type.systemInfo">
+          <h3>{{item.systemInfo.osInfo.distro}}</h3>
+          <small>model notebook: {{ item.systemInfo.system.model }}</small>
+          <small>bios version: {{ item.systemInfo.bios.version }}</small>
+        </ng-container>
       </div>
     </ng-container>
-    <div class="bento__item bento__item-8">
-      <h3>variant-3.1</h3>
-    </div>
   </div>
 </ng-container>
 

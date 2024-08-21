@@ -362,6 +362,24 @@ export const system_mocks = {
         command: "",
       },
     ],
+    osInfo: {
+      platform: "Windows",
+      distro: "Майкрософт Windows 11 Pro",
+      release: "10.0.22631",
+      codename: "",
+      kernel: "10.0.22631",
+      arch: "x64",
+      hostname: "brolo13",
+      fqdn: "BROLO13",
+      codepage: "866",
+      logofile: "windows",
+      serial: "00331-10000-00001-AA500",
+      build: "22631",
+      servicepack: "0.0",
+      uefi: true,
+      hypervisor: true,
+      remoteSession: false
+    }
   },
 
   battery: {
@@ -397,36 +415,21 @@ export const system_mocks = {
     writeback: null,
     dirty: null
   },
-  wifiConnections: {
-    id: "3ebb101c-b3b9-4439-ac1f-9c89ffc83e68",
-    iface: "Wi-Fi",
-    model: "MediaTek Wi-Fi 6 MT7921 Wireless LAN Card",
-    ssid: "Xiaomi_5DBA_5G",
-    bssid: "24:cf:24:c4:5d:bc",
-    channel: 36,
-    frequency: 5180,
-    type: "802.11ac",
-    security: "WPA2-Personal",
-    signalLevel: -61,
-    quality: 78,
-    txRate: 866
-  },
-  osInfo: {
-    platform: "Windows",
-    distro: "Майкрософт Windows 11 Pro",
-    release: "10.0.22631",
-    codename: "",
-    kernel: "10.0.22631",
-    arch: "x64",
-    hostname: "brolo13",
-    fqdn: "BROLO13",
-    codepage: "866",
-    logofile: "windows",
-    serial: "00331-10000-00001-AA500",
-    build: "22631",
-    servicepack: "0.0",
-    uefi: true,
-    hypervisor: true,
-    remoteSession: false
-  }
+  wifiConnections: [
+    {
+      id: "3ebb101c-b3b9-4439-ac1f-9c89ffc83e68",
+      iface: "Wi-Fi",
+      model: "MediaTek Wi-Fi 6 MT7921 Wireless LAN Card",
+      ssid: "Xiaomi_5DBA_5G",
+      bssid: "24:cf:24:c4:5d:bc",
+      channel: 36,
+      frequency: 5180,
+      type: "802.11ac",
+      security: "WPA2-Personal",
+      signalLevel: -61,
+      quality: 78,
+      txRate: 866
+    },
+  ]
+
 };

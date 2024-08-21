@@ -1,3 +1,22 @@
+export interface IOrganizedSystemData {
+  battery: IBatteryInfo,
+  cpuInfo?: {
+    coresLoading?: ICoresLoading,
+    details?: ICpuDetails
+  },
+  gpuData?: IGpuData,
+  memory: IMemoryInfo,
+  systemInfo: { system: ISystem; bios: IBios; users: IUser, osInfo: IOsInfo },
+  wifiConnections: IWifiConnections
+}
+
+export enum TYPE_BENTO_ITEMS {
+  wifiConnections = 'wifiConnections',
+  systemInfo = 'systemInfo',
+  battery = 'battery',
+  memory = 'memory',
+}
+
 export interface IGpuController {
     vendor: string;
     model: string;

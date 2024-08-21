@@ -4,10 +4,11 @@ import { RouterOutlet } from '@angular/router';
 import { SystemInfoService } from './services/system-info-service';
 import { ElectronService } from './services/electron-service';
 import { isElectronMode } from './helpers/helpers';
-import { combineLatest } from 'rxjs';
-import { IBatteryInfo, IBios, ICoresLoading, ICpuDetails, IGpuData, IMemoryInfo, IOsInfo, ISystem, IUser, IWifiConnections } from './models/system-data.models';
+import { combineLatest, pairwise } from 'rxjs';
+import { IBatteryInfo, IBios, ICoresLoading, ICpuDetails, IGpuData, IMemoryInfo, IOrganizedSystemData, IOsInfo, ISystem, IUser, IWifiConnections, TYPE_BENTO_ITEMS } from './models/system-data.models';
 import { system_mocks } from './mocks';
 import { RoundMath } from './helpers/math-round.pipe';
+import { LoaderComponent } from './components/loader/loader.component';
 
 declare global {
   interface Window {
@@ -17,38 +18,41 @@ declare global {
   }
 }
 
+interface BENTO_ITEMS {
+  type: string;
+  class: string;
+  wifiConnections?: IWifiConnections | any;
+  systemInfo?: { system: ISystem; bios: IBios; users: IUser, osInfo: IOsInfo } | any;
+  battery?: IBatteryInfo | any;
+  memory?: IMemoryInfo | any;
+}
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RoundMath],
+  imports: [CommonModule, RouterOutlet, RoundMath, LoaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'electron-monitor-app';
 
-  items = [
-    { class: 'bento__item-2', content: 'variant-2.1' },
-    { class: 'bento__item-3', content: 'variant-2.2' },
-    { class: 'bento__item-4', content: 'variant-2.3' },
-    { class: 'bento__item-5', content: 'variant-2.4' },
-    { class: 'bento__item-6', content: 'variant-2.5' },
-    { class: 'bento__item-7', content: 'variant-2.6' },
+  items: BENTO_ITEMS[] = [
+    { type: 'battery', class: 'bento__item-3', wifiConnections: {} },
+    { type: 'systemInfo', class: 'bento__item-4', systemInfo: {} },
+    { type: 'wifiConnections', class: 'bento__item-5', battery: {} },
+    { type: 'memory', class: 'bento__item-6', memory: {} },
   ];
 
-  private data = system_mocks;
+  private dataMocks = system_mocks;
 
+  public type = TYPE_BENTO_ITEMS;
   public isElectronApp: boolean = false;
   public isLoading: boolean = true;
   public isDataReceived: boolean = false;
 
   gpuData!: IGpuData;
-  memory!: IMemoryInfo;
-  osInfo!: IOsInfo;
-  battery!: IBatteryInfo;
-  wifiConnections!: IWifiConnections;
   cpuInfo!: { details: ICpuDetails, coresLoading: ICoresLoading };
-  systemInfo!: { system: ISystem; bios: IBios; users: IUser };
 
   constructor(private systemInfoService: SystemInfoService,
     private electronService: ElectronService,
@@ -63,27 +67,44 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    console.log('ngOnInit',this.data);
-    const {gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections, osInfo } = this.data;
+    console.log('ngOnInit', this.dataMocks);
+    const { gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections } = this.dataMocks;
     this.gpuData = gpuData;
     this.cpuInfo = cpuInfo as any;
-    this.systemInfo = systemInfo as any;
-    this.memory = memory as any;
-    this.battery = battery as any;
-    this.wifiConnections = wifiConnections as any;
-    this.osInfo = osInfo as any;
-
+    this.fillArray(this.items, this.dataMocks)
     // this.fetchSystemInfo();
     // await this.emitEventToMainProcess();
+  }
+
+  private fillArray(array: any[], data: IOrganizedSystemData | any) {
+    const { systemInfo, battery, memory, wifiConnections } = data;
+
+    array.forEach((item: any) => {
+      if (item.type === this.type.battery) {
+        item.battery = battery;
+      }
+      if (item.type === this.type.memory) {
+        item.memory = memory;
+      }
+      if (item.type === this.type.systemInfo) {
+        item.systemInfo = systemInfo;
+      }
+      if (item.type === this.type.wifiConnections) {
+        item.wifiConnections = wifiConnections;
+      }
+    })
+
+
+    console.log('items after filledArray', this.items);
   }
 
   fetchSystemInfo() {
     this.systemInfoService.fetchDataFromELectron();
     this.isLoading = true;
-    
+
     combineLatest([
       this.systemInfoService.gpuData$,
-      this.systemInfoService.currentLoad$,
+      this.systemInfoService.currentLoad$.pipe(pairwise()),
       this.systemInfoService.system$,
       this.systemInfoService.mem$,
       this.systemInfoService.cpu$,
@@ -93,25 +114,28 @@ export class AppComponent {
       this.systemInfoService.battery$,
       this.systemInfoService.wifiConnections$,
     ]).subscribe({
-      next: ([gpuData, currentLoad, system, mem, cpu, bios, users, osInfo, battery, wifiConnections]) => {
+      next: ([gpuData, [prevCurrentLoad, currentLoad], system, mem, cpu, bios, users, osInfo, battery, wifiConnections]) => {
         this.cpuInfo = {
           coresLoading: currentLoad,
           details: cpu,
         };
-  
-        this.memory = mem;
-  
-        this.systemInfo = {
-          system: system,
-          bios: bios,
-          users: users,
-        };
-  
-        this.osInfo = osInfo;
-        this.battery = battery;
+
         this.gpuData = gpuData;
-        this.wifiConnections = wifiConnections;
-  
+
+        if (system && bios && users && mem && osInfo && battery && wifiConnections) {
+          const arrayForFill =
+          {
+            systemInfo: { system, bios, users, osInfo },
+            battery: battery,
+            wifiConnections: wifiConnections,
+            memory: mem
+          }
+            ;
+
+          this.fillArray(this.items, arrayForFill);
+        }
+
+
         // Check if all data has been received
         if (gpuData && system && cpu && bios && users && mem && osInfo && battery && wifiConnections) {
           this.isLoading = false;
@@ -120,9 +144,13 @@ export class AppComponent {
         }
 
 
-        if(!gpuData || !system || !cpu || !bios || !users || !mem || !osInfo || !battery || !wifiConnections){
+        if (!gpuData || !system || !cpu || !bios || !users || !mem || !osInfo || !battery || !wifiConnections) {
           console.log('some data not been received');
         }
+
+        // console.log('prevCurrentLoad', prevCurrentLoad);
+        // console.log('currentLoad', currentLoad);
+
       },
       error: (err) => {
         console.error('Error fetching system info:', err);
@@ -130,7 +158,7 @@ export class AppComponent {
       },
     });
   }
-  
+
 
 
   async emitEventToMainProcess() {
