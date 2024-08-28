@@ -100,6 +100,7 @@ export interface IGpuController {
     cpus: ICpuLoad[];
   }
   
+  
   export interface ICache {
     l1d: number;
     l1i: number;
@@ -132,7 +133,11 @@ export interface IGpuController {
   }
   
   export interface ICpuInfo {
-    coresLoading: ICoresLoading;
+    coresLoading: {
+      prevCurrentLoad: ICoresLoading,
+      currentLoad: ICoresLoading,
+
+    };
     details: ICpuDetails;
   }
   

@@ -111,16 +111,28 @@ h3 {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
 
-.core-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  .core-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-  margin: 0px;
-  width: 100%;
-  max-width: 150px;
+    margin: 0px;
+    width: 100%;
+    max-width: 150px;
+  }
+
+  div.cores-state-wrapper {
+    display: flex;
+    width: 200px;
+    justify-content: space-evenly;
+
+    .prevCurrentLoad {
+      p:first-of-type {
+        margin-right: 20px;
+      }
+    }
+  }
 }
 
 p {
@@ -134,10 +146,14 @@ p {
   align-items: center;
 }
 
-.color_green{
+.color_green {
   color: lightgreen;
 }
 
-.color_red{
+.color_red {
   color: red;
+}
+
+.color_secondary {
+  color: darkgrey;
 }

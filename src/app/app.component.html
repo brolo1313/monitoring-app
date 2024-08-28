@@ -3,7 +3,7 @@
 </ng-template>
 
 <!-- isDataReceived && !isLoading -->
-<ng-container *ngIf="true; else loader">
+<ng-container *ngIf="isDataReceived && !isLoading; else loader">
   <div class="bento__container">
     <div class="bento__item bento__item-1">
       <h3>{{ cpuInfo?.details?.brand }}</h3>
@@ -12,12 +12,47 @@
       </div>
 
       <div class="cores-wrapper">
-        <div
-          class="core-item"
-          *ngFor="let core of cpuInfo?.coresLoading?.cpus; let i = index"
-        >
-          <p>Core {{ i + 1 }}:</p>
-          <p>{{ core?.loadSystem | round }}%</p>
+        <div class="cores-state-wrapper">
+          <ng-container>
+            <div class="prevCurrentLoad">
+              <div
+                *ngFor="
+                  let core of cpuInfo?.coresLoading?.prevCurrentLoad?.cpus ??
+                    [].constructor(12).fill({});
+                  let i = index
+                "
+                class="core-item"
+              >
+                <p>Core {{ i + 1 }}:</p>
+                <p class="color_secondary">
+                  {{
+                    core?.loadSystem ? (core?.loadSystem | round) + "%" : "-"
+                  }}
+                </p>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container>
+            <div class="currentLoad">
+              <div
+                *ngFor="
+                  let core of cpuInfo?.coresLoading?.currentLoad?.cpus;
+                  let i = index
+                "
+                class="core-item"
+              >
+                <p
+                  [ngClass]="{
+                    color_red: isRed(core, 'cpu'),
+                    color_green: isGreen(core, 'cpu')
+                  }"
+                >
+                  {{ core?.loadSystem | round }}%
+                </p>
+              </div>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>
@@ -27,8 +62,8 @@
       <small>{{ gpuData.controllers[0].driverVersion }}V</small>
       <p
         [ngClass]="{
-          color_red: gpuData?.controllers[0]?.temperatureGpu > 50,
-          color_green: gpuData?.controllers[0]?.temperatureGpu < 50
+          color_red: isRed(gpuData?.controllers[0], 'gpu'),
+          color_green: isGreen(gpuData?.controllers[0], 'gpu')
         }"
       >
         {{ gpuData.controllers[0].temperatureGpu }}&deg;

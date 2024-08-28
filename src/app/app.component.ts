@@ -5,7 +5,7 @@ import { SystemInfoService } from './services/system-info-service';
 import { ElectronService } from './services/electron-service';
 import { isElectronMode } from './helpers/helpers';
 import { combineLatest, pairwise } from 'rxjs';
-import { IBatteryInfo, IBios, ICoresLoading, ICpuDetails, IGpuData, IMemoryInfo, IOrganizedSystemData, IOsInfo, ISystem, IUser, IWifiConnections, TYPE_BENTO_ITEMS } from './models/system-data.models';
+import { IBatteryInfo, IBios, ICoresLoading, ICpuDetails, ICpuInfo, IGpuData, IMemoryInfo, IOrganizedSystemData, IOsInfo, ISystem, IUser, IWifiConnections, TYPE_BENTO_ITEMS } from './models/system-data.models';
 import { system_mocks } from './mocks';
 import { RoundMath } from './helpers/math-round.pipe';
 import { LoaderComponent } from './components/loader/loader.component';
@@ -55,7 +55,7 @@ export class AppComponent {
   public isDataReceived: boolean = false;
 
   gpuData!: IGpuData | any;
-  cpuInfo!: { details: ICpuDetails, coresLoading: ICoresLoading };
+  cpuInfo!: ICpuInfo;
   versions!: any;
 
   constructor(private systemInfoService: SystemInfoService,
@@ -125,7 +125,10 @@ export class AppComponent {
     ]).subscribe({
       next: ([gpuData, [prevCurrentLoad, currentLoad], system, mem, cpu, bios, users, osInfo, battery, wifiConnections, nodeVersion, chromeVersion, electronVersion]) => {
         this.cpuInfo = {
-          coresLoading: currentLoad,
+          coresLoading: {
+            prevCurrentLoad: prevCurrentLoad,
+            currentLoad: currentLoad
+          },
           details: cpu,
         };
 
@@ -167,9 +170,6 @@ export class AppComponent {
           console.log('some data not been received');
         }
 
-        // console.log('prevCurrentLoad', prevCurrentLoad);
-        // console.log('currentLoad', currentLoad);
-
       },
       error: (err) => {
         console.error('Error fetching system info:', err);
@@ -178,6 +178,15 @@ export class AppComponent {
     });
   }
 
+
+  isRed(data: any, state: any): boolean {
+    return state === 'cpu' ? (data?.loadSystem ?? 0) > 50 : (data?.temperatureGpu ?? 0) > 50;
+  }
+  
+  isGreen(data: any, state: any): boolean {
+    console.log('data', data);
+    return state === 'cpu' ? (data?.loadSystem ?? 0) < 50 : (data?.temperatureGpu ?? 0) < 50;
+  }
 
 
   async emitEventToMainProcess() {
