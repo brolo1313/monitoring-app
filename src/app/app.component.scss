@@ -45,6 +45,8 @@ img {
   overflow: hidden;
   transition: all 200ms ease;
   background-color: #444;
+
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
 .bento__item-1 {

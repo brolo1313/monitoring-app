@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, VERSION } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { SystemInfoService } from './services/system-info-service';
@@ -9,6 +9,7 @@ import { IBatteryInfo, IBios, ICoresLoading, ICpuDetails, ICpuInfo, IGpuData, IM
 import { system_mocks } from './mocks';
 import { RoundMath } from './helpers/math-round.pipe';
 import { LoaderComponent } from './components/loader/loader.component';
+import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
 
 declare global {
   interface Window {
@@ -34,9 +35,23 @@ interface BENTO_ITEMS {
   imports: [CommonModule, RouterOutlet, RoundMath, LoaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
+  animations: [
+    trigger('bentoAnimation', [
+      transition(':enter', [
+        query('.bento__item', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          stagger(100, [
+            animate('0.5s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+          ])
+        ])
+      ])
+    ])
+  ]
 })
 export class AppComponent {
   title = 'electron-monitor-app';
+
+   angularVersion = VERSION.full;
 
   items: BENTO_ITEMS[] = [
     { type: 'battery', class: 'bento__item-3', wifiConnections: {} },
@@ -72,11 +87,15 @@ export class AppComponent {
 
   ngOnInit() {
     // console.log('ngOnInit', this.dataMocks);
-    // const { gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections } = this.dataMocks;
-    // this.gpuData = gpuData;
-    // this.cpuInfo = cpuInfo as any;
-    // this.fillArray(this.items, this.dataMocks)
-    this.fetchSystemInfo();
+    const { gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections } = this.dataMocks;
+    this.gpuData = gpuData;
+    this.cpuInfo = cpuInfo as any;
+    this.isLoading = false;
+    this.isDataReceived = true;
+    this.fillArray(this.items, this.dataMocks)
+
+
+    // this.fetchSystemInfo();
 
     // await this.emitEventToMainProcess();
   }
@@ -150,10 +169,12 @@ export class AppComponent {
             versions: {
               nodeVersion,
               chromeVersion,
-              electronVersion
+              electronVersion,
+              angularVersion: this.angularVersion,
             }
           };
 
+          
           this.fillArray(this.items, arrayForFill);
         }
 
@@ -182,9 +203,8 @@ export class AppComponent {
   isRed(data: any, state: any): boolean {
     return state === 'cpu' ? (data?.loadSystem ?? 0) > 50 : (data?.temperatureGpu ?? 0) > 50;
   }
-  
+
   isGreen(data: any, state: any): boolean {
-    console.log('data', data);
     return state === 'cpu' ? (data?.loadSystem ?? 0) < 50 : (data?.temperatureGpu ?? 0) < 50;
   }
 

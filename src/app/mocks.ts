@@ -671,9 +671,10 @@ export const system_mocks = {
     },
   ],
   versions: {
-    nodeVersion: "126.0.6478.61",
-    chromeVersion: "20.14.0",
+    nodeVersion: "20.14.0",
+    // chromeVersion: "126.0.6478.61",
     electronVersion: "31.0.2",
+    angularVersion: "18.0.4"
   }
 
 };

@@ -4,7 +4,7 @@
 
 <!-- isDataReceived && !isLoading -->
 <ng-container *ngIf="isDataReceived && !isLoading; else loader">
-  <div class="bento__container">
+  <div class="bento__container"  @bentoAnimation>
     <div class="bento__item bento__item-1">
       <h3>{{ cpuInfo?.details?.brand }}</h3>
       <div class="image-wrapper">
@@ -111,8 +111,9 @@
         <ng-container *ngIf="item.type === type.versions">
           <h3>Versions</h3>
           <small>Node: {{ item.versions.nodeVersion }}</small>
+          <small>Angular: {{ item.versions.angularVersion }}</small>
           <small>Electron: {{ item.versions.electronVersion }}</small>
-          <small>Chrome: {{ item.versions.chromeVersion }}</small>
+          <!-- <small>Chrome: {{ item.versions.chromeVersion }}</small> -->
         </ng-container>
 
         <ng-container *ngIf="item.type === type.systemInfo">
