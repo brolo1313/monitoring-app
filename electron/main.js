@@ -9,12 +9,12 @@ const { loadAppUrl, getEnvUrls } = require("./helpers/loadUrl");
 const { logWithColor } = require("./helpers/functions");
 const EventEmitter = require("events");
 const eventEmitter = new EventEmitter();
-const { exec } = require('child_process');
+const { exec } = require("child_process");
 
 let mainWindow; // Define win globally
 
 function createWindow() {
-   mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -50,14 +50,12 @@ try {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  // Added 400 ms to fix the black background issue while using transparent window. More detais at https://github.com/electron/electron/issues/15947
+  // Added 500 ms to fix the black background issue while using transparent window.
   app.on("ready", () => {
     setTimeout(() => createWindow(), 500);
 
     eventEmitter.on("windowReady", () => {
-      // getSystemInfo();
-      // webSocketInit();
-      // startMonitoring();
+      startMonitoring();
     });
   });
 
@@ -68,7 +66,7 @@ try {
     if (process.platform !== "darwin") {
       electron_1.app.quit();
     }
-    logWithColor('app exit', 'red');
+    logWithColor("app exit", "red");
   });
   app.on("activate", () => {
     // On OS X it's common to re-create a window in the app when the
@@ -78,57 +76,69 @@ try {
     }
   });
 } catch (e) {
-  logWithColor('App window error was occurred', 'red');
+  logWithColor("App window error was occurred", "red");
   throw e;
 }
 
-ipcMain.on('get-gpu-temperature', async (event) => {
-  const gpuData = await si.graphics();
-  event.reply('gpu-temperature', gpuData);
-});
+// ipcMain.on("get-gpu-temperature", async (event) => {
+//   const gpuData = await si.graphics();
+//   event.reply("system-monitoring-data", gpuData);
+// });
 
 async function startMonitoring() {
-  console.log('startMonitoring start');
-  setInterval(async () => {
-    const gpuData = await si.graphics();
-    const currentLoad = await si.currentLoad();
-    const mem = await si.mem();
-    const cpu = await si.cpu();
-    const users = await si.users();
-    const system = await si.system();
-    const osInfo = await si.osInfo();
-    const battery = await si.battery();
-    const wifiConnections = await si.wifiConnections();
-    const bios = await si.bios();
-    console.log('setInterval works');
+  logWithColor("startMonitoring", "yellow");
 
-    const result = {
-      gpuData, currentLoad, cpu ,mem, users, system, osInfo, battery, wifiConnections, bios
+  // Initialize variables to store data that doesn't need to be fetched repeatedly
+  let cachedCpu, cachedUsers, cachedSystem, cachedOsInfo, cachedBios;
+
+  // Fetch and cache the data that doesn't change frequently
+  if (
+    !cachedCpu ||
+    !cachedUsers ||
+    !cachedSystem ||
+    !cachedOsInfo ||
+    !cachedBios
+  ) {
+    try {
+      cachedCpu = await si.cpu();
+      cachedUsers = await si.users();
+      cachedSystem = await si.system();
+      cachedOsInfo = await si.osInfo();
+      cachedBios = await si.bios();
+
+      logWithColor("Cached data has been received", "green");
+    } catch {
+      logWithColor("cached data ain't fetched", "red", error);
     }
-
-    mainWindow.webContents.send('gpu-temperature', result);
-  }, 20000);
-}
-
-
-async function getSystemInfo(connection) {
-  try {
-    const gpuData = await si.graphics();
-    const currentLoad = await si.currentLoad();
-    const mem = await si.mem();
-    const cpu = await si.cpu();
-    const users = await si.users();
-    const system = await si.system();
-    const osInfo = await si.osInfo();
-    const battery = await si.battery();
-    const wifiConnections = await si.wifiConnections();
-    const bios = await si.bios();
-
-    connection.send(JSON.stringify({ gpuData, currentLoad, cpu ,mem, users, system, osInfo, battery, wifiConnections, bios }));
-  } catch (error) {
-    logWithColor('getSystemInfo has error', 'red', error);
-    connection.send('{"error": "Failed to retrieve system information"}');
   }
+
+  setInterval(async () => {
+    try {
+      const gpuData = await si.graphics();
+      const currentLoad = await si.currentLoad();
+      const mem = await si.mem();
+      const battery = await si.battery();
+      const wifiConnections = await si.wifiConnections();
+
+      const result = {
+        gpuData,
+        currentLoad,
+        mem,
+        battery,
+        wifiConnections,
+        cpu: cachedCpu,
+        users: cachedUsers,
+        system: cachedSystem,
+        osInfo: cachedOsInfo,
+        bios: cachedBios,
+      };
+
+      logWithColor("data is complete", "green");
+      mainWindow.webContents.send("system-monitoring-data", result);
+    } catch {
+      logWithColor("data not received", "red", error);
+    }
+  }, 20000);
 }
 
 //logic to get event  from client
@@ -139,5 +149,3 @@ async function getSystemInfo(connection) {
 //         date: new Date(),
 //       };
 //     });
-
-

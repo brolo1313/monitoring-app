@@ -25,7 +25,14 @@
     <div class="bento__item bento__item-2">
       <h3>{{ gpuData.controllers[0].model }}</h3>
       <small>{{ gpuData.controllers[0].driverVersion }}V</small>
-      <p>{{ gpuData.controllers[0].temperatureGpu }}&deg;</p>
+      <p
+        [ngClass]="{
+          color_red: gpuData?.controllers[0]?.temperatureGpu > 50,
+          color_green: gpuData?.controllers[0]?.temperatureGpu < 50
+        }"
+      >
+        {{ gpuData.controllers[0].temperatureGpu }}&deg;
+      </p>
       <div class="image-wrapper">
         <img src="../assets/icons/gpu.svg" alt="" />
       </div>
@@ -42,9 +49,22 @@
         <ng-container *ngIf="item.type === type.battery">
           <h3>BATTERY</h3>
           <small>model: {{ item.battery.model }}</small>
-          <small>percent: {{ item.battery.percent }}%</small>
+          <small
+            >percent:
+            <span
+              [ngClass]="{
+                color_green: item.battery.percent > 30,
+                color_red: item.battery.percent < 30
+              }"
+            >
+              {{ item.battery.percent }}%</span
+            ></small
+          >
           <small>voltage: {{ item.battery.voltage }}V</small>
-          <small>capacity: {{ item.battery.maxCapacity }}{{item.battery.capacityUnit}}</small>
+          <small
+            >capacity: {{ item.battery.maxCapacity
+            }}{{ item.battery.capacityUnit }}</small
+          >
         </ng-container>
 
         <ng-container *ngIf="item.type === type.memory">
@@ -53,8 +73,15 @@
           <small>used: {{ item.memory.used }}</small>
         </ng-container>
 
+        <ng-container *ngIf="item.type === type.versions">
+          <h3>Versions</h3>
+          <small>Node: {{ item.versions.nodeVersion }}</small>
+          <small>Electron: {{ item.versions.electronVersion }}</small>
+          <small>Chrome: {{ item.versions.chromeVersion }}</small>
+        </ng-container>
+
         <ng-container *ngIf="item.type === type.systemInfo">
-          <h3>{{item.systemInfo.osInfo.distro}}</h3>
+          <h3>{{ item.systemInfo.osInfo.distro }}</h3>
           <small>model notebook: {{ item.systemInfo.system.model }}</small>
           <small>bios version: {{ item.systemInfo.bios.version }}</small>
         </ng-container>

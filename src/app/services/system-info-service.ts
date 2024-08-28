@@ -31,6 +31,9 @@ export class SystemInfoService {
   private osInfoSubject = new BehaviorSubject<any>(null);
   private wifiConnectionsSubject = new BehaviorSubject<any>(null);
 
+  private nodeVersionSubject = new BehaviorSubject<any>(null);
+  private chromeVersionSubject = new BehaviorSubject<any>(null);
+  private electronVersionSubject = new BehaviorSubject<any>(null);
 
   private intervalId: any;
 
@@ -45,15 +48,15 @@ export class SystemInfoService {
   osInfo$ = this.osInfoSubject.asObservable();
   wifiConnections$ = this.wifiConnectionsSubject.asObservable();
 
-
-  constructor() {
-  }
+  nodeVersion$ = this.nodeVersionSubject.asObservable();
+  chromeVersion$ = this.chromeVersionSubject.asObservable();
+  electronVersion$ = this.electronVersionSubject.asObservable();
 
 
   fetchDataFromELectron(){
     if (window['electron']) {
-      window['electron'].ipcRenderer.on('gpu-temperature', (data: any) => {
-        console.log('SystemInfoService get data', data);
+      window['electron'].ipcRenderer.on('system-monitoring-data', (data: any) => {
+        // console.log('SystemInfoService get data', data);
         if (data?.gpuData) {
           this.gpuDataSubject.next(data.gpuData);
         }
@@ -94,6 +97,12 @@ export class SystemInfoService {
           this.cpuSubject.next(data.cpu);
         }
       });
+    }
+
+    if (window.versions) {
+      this.nodeVersionSubject.next(window.versions.node());
+      this.chromeVersionSubject.next(window.versions.chrome());
+      this.electronVersionSubject.next(window.versions.electron());
     }
   }
 

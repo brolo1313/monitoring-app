@@ -25,6 +25,7 @@ interface BENTO_ITEMS {
   systemInfo?: { system: ISystem; bios: IBios; users: IUser, osInfo: IOsInfo } | any;
   battery?: IBatteryInfo | any;
   memory?: IMemoryInfo | any;
+  versions?: any;
 }
 
 @Component({
@@ -42,6 +43,8 @@ export class AppComponent {
     { type: 'systemInfo', class: 'bento__item-4', systemInfo: {} },
     { type: 'wifiConnections', class: 'bento__item-5', battery: {} },
     { type: 'memory', class: 'bento__item-6', memory: {} },
+    { type: 'versions', class: 'bento__item-7', versions: {} },
+
   ];
 
   private dataMocks = system_mocks;
@@ -51,8 +54,9 @@ export class AppComponent {
   public isLoading: boolean = true;
   public isDataReceived: boolean = false;
 
-  gpuData!: IGpuData;
+  gpuData!: IGpuData | any;
   cpuInfo!: { details: ICpuDetails, coresLoading: ICoresLoading };
+  versions!: any;
 
   constructor(private systemInfoService: SystemInfoService,
     private electronService: ElectronService,
@@ -67,17 +71,18 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    console.log('ngOnInit', this.dataMocks);
-    const { gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections } = this.dataMocks;
-    this.gpuData = gpuData;
-    this.cpuInfo = cpuInfo as any;
-    this.fillArray(this.items, this.dataMocks)
-    // this.fetchSystemInfo();
+    // console.log('ngOnInit', this.dataMocks);
+    // const { gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections } = this.dataMocks;
+    // this.gpuData = gpuData;
+    // this.cpuInfo = cpuInfo as any;
+    // this.fillArray(this.items, this.dataMocks)
+    this.fetchSystemInfo();
+
     // await this.emitEventToMainProcess();
   }
 
   private fillArray(array: any[], data: IOrganizedSystemData | any) {
-    const { systemInfo, battery, memory, wifiConnections } = data;
+    const { systemInfo, battery, memory, wifiConnections, versions } = data;
 
     array.forEach((item: any) => {
       if (item.type === this.type.battery) {
@@ -92,10 +97,11 @@ export class AppComponent {
       if (item.type === this.type.wifiConnections) {
         item.wifiConnections = wifiConnections;
       }
+
+      if (item.type === this.type.versions) {
+        item.versions = versions;
+      }
     })
-
-
-    console.log('items after filledArray', this.items);
   }
 
   fetchSystemInfo() {
@@ -113,8 +119,11 @@ export class AppComponent {
       this.systemInfoService.osInfo$,
       this.systemInfoService.battery$,
       this.systemInfoService.wifiConnections$,
+      this.systemInfoService.nodeVersion$,
+      this.systemInfoService.chromeVersion$,
+      this.systemInfoService.electronVersion$,
     ]).subscribe({
-      next: ([gpuData, [prevCurrentLoad, currentLoad], system, mem, cpu, bios, users, osInfo, battery, wifiConnections]) => {
+      next: ([gpuData, [prevCurrentLoad, currentLoad], system, mem, cpu, bios, users, osInfo, battery, wifiConnections, nodeVersion, chromeVersion, electronVersion]) => {
         this.cpuInfo = {
           coresLoading: currentLoad,
           details: cpu,
@@ -122,15 +131,25 @@ export class AppComponent {
 
         this.gpuData = gpuData;
 
+        this.versions = {
+          nodeVersion,
+          chromeVersion,
+          electronVersion
+        }
+
         if (system && bios && users && mem && osInfo && battery && wifiConnections) {
           const arrayForFill =
           {
             systemInfo: { system, bios, users, osInfo },
             battery: battery,
             wifiConnections: wifiConnections,
-            memory: mem
-          }
-            ;
+            memory: mem,
+            versions: {
+              nodeVersion,
+              chromeVersion,
+              electronVersion
+            }
+          };
 
           this.fillArray(this.items, arrayForFill);
         }

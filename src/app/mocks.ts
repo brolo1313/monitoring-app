@@ -391,7 +391,7 @@ export const system_mocks = {
     currentCapacity: 38164,
     voltage: 15.333,
     capacityUnit: "mWh",
-    percent: 79,
+    percent: 49,
     timeRemaining: null,
     acConnected: false,
     type: "",
@@ -430,6 +430,11 @@ export const system_mocks = {
       quality: 78,
       txRate: 866
     },
-  ]
+  ],
+  versions: {
+    nodeVersion: "126.0.6478.61",
+    chromeVersion: "20.14.0",
+    electronVersion: "31.0.2",
+  }
 
 };
