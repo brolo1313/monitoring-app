@@ -8,7 +8,7 @@
     <div class="bento__item bento__item-1">
       <h3>{{ cpuInfo?.details?.brand }}</h3>
       <div class="image-wrapper">
-        <img src="../assets/icons/cpu.svg" alt="" />
+        <img [src]="'assets/icons/cpu.svg'" alt="CPU Icon" />
       </div>
 
       <div class="cores-wrapper">
@@ -69,7 +69,7 @@
         {{ gpuData.controllers[0].temperatureGpu }}&deg;
       </p>
       <div class="image-wrapper">
-        <img src="../assets/icons/gpu.svg" alt="" />
+        <img [src]="'assets/icons/gpu.svg'" alt="" />
       </div>
     </div>
     <ng-container *ngFor="let item of items">

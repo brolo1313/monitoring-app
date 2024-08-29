@@ -16,7 +16,12 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 
 ## Electron build
-if you want see last changes, you should run `ng build`.
+Run `npm build-installer` packages the application and then creates a Windows installer with a better installation process.
+
+OR you can do the same using native Electron builder , but with simplest  installer.
+
+if you want see last changes in distribution version, you should run `ng build`.
+Run `npm run start` to local test before package or make.
 Run `npm run package` - packages the app for local testing and debugging. It creates a runnable version of your app but does not create an installer.
 Run `npm run make` - packages the app and then creates platform-specific installers that you can distribute to users.
 

@@ -2,6 +2,7 @@
   "name": "electron-monitor-app",
   "version": "0.0.0",
   "main": "electron/main.js",
+  "productName": "System Monitor",
   "author": {
     "name": "Andrew Yupin",
     "email": "brolo1341@gmail.com"
@@ -16,7 +17,30 @@
     "test": "ng test",
     "ng:serve": "ng serve -c  -o",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "build-installer": "electron-builder"
+  },
+  "build": {
+    "appId": "System Monitor",
+    "win": {
+      "target": "nsis",
+      "icon": "src/icon.ico",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*", 
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "nsis": {
+      "installerIcon": "src/icon.ico",
+      "uninstallerIcon": "src/icon.ico",
+      "uninstallDisplayName": "System Monitor",
+      "license": "license.txt",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "private": true,
   "dependencies": {
@@ -58,6 +82,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.4.5"
+    "typescript": "~5.4.5",
+    "electron-builder": "^24.13.3"
   }
 }

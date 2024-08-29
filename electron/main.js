@@ -138,7 +138,7 @@ async function startMonitoring() {
     } catch {
       logWithColor("data not received", "red", error);
     }
-  }, 20000);
+  }, 10000);
 }
 
 //logic to get event  from client
