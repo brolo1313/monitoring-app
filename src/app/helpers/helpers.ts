@@ -4,7 +4,7 @@ export function isFunction(value: any): boolean {
 
 
 export function isElectronMode(): boolean {
-  if (window.electronAPI) {
+  if (window.electron) {
     return true;
   }
 

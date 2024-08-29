@@ -4,11 +4,13 @@
 
 <!-- isDataReceived && !isLoading -->
 <ng-container *ngIf="isDataReceived && !isLoading; else loader">
-  <div class="bento__container"  @bentoAnimation>
+  <div class="bento__container" @bentoAnimation>
     <div class="bento__item bento__item-1">
-      <h3>{{ cpuInfo?.details?.brand }}</h3>
-      <div class="image-wrapper">
-        <img [src]="'assets/icons/cpu.svg'" alt="CPU Icon" />
+      <div class="flex-center">
+        <h3>{{ cpuInfo?.details?.brand }}</h3>
+        <div class="image-wrapper">
+          <img [src]="'assets/icons/cpu.svg'" alt="CPU" data-type="cpu" />
+        </div>
       </div>
 
       <div class="cores-wrapper">
@@ -69,7 +71,7 @@
         {{ gpuData.controllers[0].temperatureGpu }}&deg;
       </p>
       <div class="image-wrapper">
-        <img [src]="'assets/icons/gpu.svg'" alt="" />
+        <img [src]="'assets/icons/gpu.svg'" alt="GPU" data-type="gpu" />
       </div>
     </div>
     <ng-container *ngFor="let item of items">
@@ -77,7 +79,9 @@
         <ng-container *ngIf="item.type === type.wifiConnections">
           <h3>{{ item.wifiConnections[0]?.ssid }}</h3>
           <small>channel: {{ item.wifiConnections[0]?.channel }}</small>
-          <small>signal Level: {{ item.wifiConnections[0]?.signalLevel }}</small>
+          <small
+            >signal Level: {{ item.wifiConnections[0]?.signalLevel }}</small
+          >
           <small>type: {{ item.wifiConnections[0]?.type }}</small>
         </ng-container>
 
@@ -104,8 +108,8 @@
 
         <ng-container *ngIf="item.type === type.memory">
           <h3>RAM</h3>
-          <small>total: {{ item.memory.total }}</small>
-          <small>used: {{ item.memory.used }}</small>
+          <small>total: {{ item.memory.total | gbConvert }}</small>
+          <small>used: {{ item.memory.used | gbConvert }}</small>
         </ng-container>
 
         <ng-container *ngIf="item.type === type.versions">
@@ -117,9 +121,20 @@
         </ng-container>
 
         <ng-container *ngIf="item.type === type.systemInfo">
-          <h3>{{ item.systemInfo.osInfo.distro }}</h3>
-          <small>model notebook: {{ item.systemInfo.system.model }}</small>
-          <small>bios version: {{ item.systemInfo.bios.version }}</small>
+          <div class="system-info-wrapper">
+            <div class="image-wrapper">
+              <img
+                [src]="'assets/icons/windows.svg'"
+                alt="windows"
+                data-type="windows"
+              />
+            </div>
+            <div class="system-item-info">
+              <h3>{{ item.systemInfo.osInfo.distro }}</h3>
+              <small>model notebook: {{ item.systemInfo.system.model }}</small>
+              <small>bios version: {{ item.systemInfo.bios.version }}</small>
+            </div>
+          </div>
         </ng-container>
       </div>
     </ng-container>

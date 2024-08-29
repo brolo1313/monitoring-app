@@ -16,7 +16,8 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 
 ## Electron build
-Run `npm build-installer` packages the application and then creates a Windows installer with a better installation process.
+First `ng build`.
+Then run `npm build-installer` packages the application and then creates a Windows installer with a better installation process.
 
 OR you can do the same using native Electron builder , but with simplest  installer.
 

@@ -6,6 +6,8 @@ h3 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: auto;
+
+  text-wrap: balance;
 }
 
 img {
@@ -14,26 +16,21 @@ img {
   background: transparent;
 }
 
-.img-core {
-  width: 50px;
-}
-
 .bento__container {
-  max-width: 900px;
-  height: 500px;
   margin: 1rem;
   display: grid;
-  grid-auto-columns: 1fr;
-  gap: 1.7rem;
+  grid-template-columns: 1fr 130px 140px 200px;
+  grid-template-rows: 150px 120px 160px;
+  gap: 0.6rem;
   grid-template-areas:
-    "box-1 box-1 box-2 box-2 box-3 box-3"
-    "box-1 box-1 box-4 box-4 box-4 box-4"
-    "box-1 box-1 box-5 box-6 box-6 box-7";
+    "box-1 box-2 box-2 box-3"
+    "box-1 box-4 box-4 box-4"
+    "box-1 box-5 box-6 box-7";
+
+  transition: all 0.5s ease;
 }
 
 .bento__item {
-  height: 100%;
-  width: 100%;
   padding: 10px;
   text-align: center;
 
@@ -103,6 +100,14 @@ h3 {
 }
 
 .image-wrapper {
+  img[data-type="cpu"] {
+    width: 40px;
+  }
+
+  img[data-type="windows"] {
+    width: 70px;
+  }
+  
   img {
     width: 50px;
     margin: 0;
@@ -137,6 +142,17 @@ h3 {
   }
 }
 
+.system-info-wrapper {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  .system-item-info {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 p {
   color: antiquewhite;
   margin: 5px;
@@ -158,4 +174,8 @@ p {
 
 .color_secondary {
   color: darkgrey;
+}
+
+.d-flex {
+  display: flex;
 }

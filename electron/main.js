@@ -16,7 +16,7 @@ let mainWindow; // Define win globally
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 550,
     webPreferences: {
       preload: path.join(__dirname, "../electron/preload.js"),
       contextIsolation: true,
@@ -24,6 +24,8 @@ function createWindow() {
       nodeIntegration: true,
     },
   });
+
+  mainWindow.setResizable(false)
 
   const { localEnv, buildEnv, isLocalTest } = getEnvUrls();
   loadAppUrl(mainWindow, localEnv, buildEnv, isLocalTest);

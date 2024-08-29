@@ -10,6 +10,7 @@ import { system_mocks } from './mocks';
 import { RoundMath } from './helpers/math-round.pipe';
 import { LoaderComponent } from './components/loader/loader.component';
 import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
+import { GbConvertPipe } from './helpers/gb-convert.pipe';
 
 declare global {
   interface Window {
@@ -32,7 +33,7 @@ interface BENTO_ITEMS {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RoundMath, LoaderComponent],
+  imports: [CommonModule, RouterOutlet, RoundMath, LoaderComponent, GbConvertPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: [
@@ -51,7 +52,7 @@ interface BENTO_ITEMS {
 export class AppComponent {
   title = 'electron-monitor-app';
 
-   angularVersion = VERSION.full;
+  angularVersion = VERSION.full;
 
   items: BENTO_ITEMS[] = [
     { type: 'battery', class: 'bento__item-3', wifiConnections: {} },
@@ -80,24 +81,11 @@ export class AppComponent {
     this.isElectronApp = isElectronMode();
     if (this.isElectronApp) {
       console.log('Run in electron');
+      this.getDataForElectron();
     } else {
       console.log('Run in browser');
+      this.getDataFoBrowser();
     }
-  }
-
-  ngOnInit() {
-    // console.log('ngOnInit', this.dataMocks);
-    // const { gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections } = this.dataMocks;
-    // this.gpuData = gpuData;
-    // this.cpuInfo = cpuInfo as any;
-    // this.isLoading = false;
-    // this.isDataReceived = true;
-    // this.fillArray(this.items, this.dataMocks)
-
-
-    this.fetchSystemInfo();
-
-    // await this.emitEventToMainProcess();
   }
 
   private fillArray(array: any[], data: IOrganizedSystemData | any) {
@@ -123,7 +111,7 @@ export class AppComponent {
     })
   }
 
-  fetchSystemInfo() {
+  getDataForElectron() {
     this.systemInfoService.fetchDataFromELectron();
     this.isLoading = true;
 
@@ -174,7 +162,7 @@ export class AppComponent {
             }
           };
 
-          
+
           this.fillArray(this.items, arrayForFill);
         }
 
@@ -209,9 +197,19 @@ export class AppComponent {
   }
 
 
+  // await this.emitEventToMainProcess();
+
   async emitEventToMainProcess() {
     const response = await window.versions.ping()
     console.log('come from main process:', response) // prints out 'pong'
   }
 
+  private getDataFoBrowser() {
+    const { gpuData, cpuInfo} = this.dataMocks;
+    this.gpuData = gpuData;
+    this.cpuInfo = cpuInfo as any;
+    this.isLoading = false;
+    this.isDataReceived = true;
+    this.fillArray(this.items, this.dataMocks)
+  }
 }
