@@ -55,7 +55,7 @@ try {
     setTimeout(() => createWindow(), 500);
 
     eventEmitter.on("windowReady", () => {
-      // startMonitoring();
+      startMonitoring();
     });
   });
 

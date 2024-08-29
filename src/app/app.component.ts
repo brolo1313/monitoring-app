@@ -87,15 +87,15 @@ export class AppComponent {
 
   ngOnInit() {
     // console.log('ngOnInit', this.dataMocks);
-    const { gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections } = this.dataMocks;
-    this.gpuData = gpuData;
-    this.cpuInfo = cpuInfo as any;
-    this.isLoading = false;
-    this.isDataReceived = true;
-    this.fillArray(this.items, this.dataMocks)
+    // const { gpuData, cpuInfo, systemInfo, battery, memory, wifiConnections } = this.dataMocks;
+    // this.gpuData = gpuData;
+    // this.cpuInfo = cpuInfo as any;
+    // this.isLoading = false;
+    // this.isDataReceived = true;
+    // this.fillArray(this.items, this.dataMocks)
 
 
-    // this.fetchSystemInfo();
+    this.fetchSystemInfo();
 
     // await this.emitEventToMainProcess();
   }
