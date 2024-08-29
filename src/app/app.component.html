@@ -75,10 +75,10 @@
     <ng-container *ngFor="let item of items">
       <div class="bento__item" [ngClass]="item.class">
         <ng-container *ngIf="item.type === type.wifiConnections">
-          <h3>{{ item.wifiConnections[0].ssid }}</h3>
-          <small>channel: {{ item.wifiConnections[0].channel }}</small>
-          <small>signal Level: {{ item.wifiConnections[0].signalLevel }}</small>
-          <small>type: {{ item.wifiConnections[0].type }}</small>
+          <h3>{{ item.wifiConnections[0]?.ssid }}</h3>
+          <small>channel: {{ item.wifiConnections[0]?.channel }}</small>
+          <small>signal Level: {{ item.wifiConnections[0]?.signalLevel }}</small>
+          <small>type: {{ item.wifiConnections[0]?.type }}</small>
         </ng-container>
 
         <ng-container *ngIf="item.type === type.battery">
