@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "main": "electron/main.js",
   "productName": "System Monitor",
+  "artifactName": "${productName}-${arch}.${ext}",
   "author": {
     "name": "Andrew Yupin",
     "email": "brolo1341@gmail.com"
@@ -23,17 +24,26 @@
   "build": {
     "appId": "System Monitor",
     "win": {
-      "target": "nsis",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
       "icon": "src/icon.ico",
       "requestedExecutionLevel": "requireAdministrator"
     },
     "files": [
       "dist/**/*",
-      "electron/**/*", 
+      "electron/**/*",
       "node_modules/**/*",
       "package.json"
     ],
     "nsis": {
+      "artifactName": "${productName}-Installer.${ext}",
       "installerIcon": "src/icon.ico",
       "uninstallerIcon": "src/icon.ico",
       "uninstallDisplayName": "System Monitor",

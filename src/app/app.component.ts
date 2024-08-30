@@ -141,12 +141,6 @@ export class AppComponent {
 
         this.gpuData = gpuData;
 
-        this.versions = {
-          nodeVersion,
-          chromeVersion,
-          electronVersion
-        }
-
         if (system && bios && users && mem && osInfo && battery && wifiConnections) {
           const arrayForFill =
           {
@@ -163,6 +157,7 @@ export class AppComponent {
           };
 
 
+          console.log('cpuInfo', this.cpuInfo);
           this.fillArray(this.items, arrayForFill);
         }
 
