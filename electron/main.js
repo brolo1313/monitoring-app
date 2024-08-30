@@ -16,7 +16,7 @@ let mainWindow; // Define win globally
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 550,
+    height: 600,
     webPreferences: {
       preload: path.join(__dirname, "../electron/preload.js"),
       contextIsolation: true,
@@ -57,7 +57,7 @@ try {
     setTimeout(() => createWindow(), 500);
 
     eventEmitter.on("windowReady", () => {
-      startMonitoring();
+      // startMonitoring();
     });
   });
 

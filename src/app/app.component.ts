@@ -63,7 +63,7 @@ export class AppComponent {
 
   ];
 
-  private dataMocks = system_mocks;
+  public dataMocks = system_mocks;
 
   public type = TYPE_BENTO_ITEMS;
   public isElectronApp: boolean = false;
@@ -81,7 +81,9 @@ export class AppComponent {
     this.isElectronApp = isElectronMode();
     if (this.isElectronApp) {
       console.log('Run in electron');
-      this.getDataForElectron();
+      // this.getDataForElectron();
+      this.getDataFoBrowser();
+
     } else {
       console.log('Run in browser');
       this.getDataFoBrowser();
@@ -207,4 +209,26 @@ export class AppComponent {
     this.isDataReceived = true;
     this.fillArray(this.items, this.dataMocks)
   }
+
+
+  downloadDataAsFile(data: any, filename: string = 'data.txt') {
+    // Convert the object to a JSON string
+    const jsonStr = JSON.stringify(data, null, 2); // pretty print with 2 spaces
+  
+    // Create a blob from the JSON string
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+  
+    // Create a download link
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+  
+    // Simulate a click on the link to start the download
+    a.click();
+  
+    // Clean up by revoking the object URL
+    window.URL.revokeObjectURL(url);
+  }
+  
 }

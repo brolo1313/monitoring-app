@@ -37,9 +37,8 @@
       "requestedExecutionLevel": "requireAdministrator"
     },
     "files": [
-      "dist/**/*",
+      "dist/browser/**/*",
       "electron/**/*",
-      "node_modules/**/*",
       "package.json"
     ],
     "nsis": {

@@ -17,7 +17,7 @@ img {
 }
 
 .bento__container {
-  margin: 1rem;
+  margin: 1rem 1rem 0 1rem;
   display: grid;
   grid-template-columns: 1fr 130px 140px 200px;
   grid-template-rows: 150px 120px 160px;
@@ -107,7 +107,7 @@ h3 {
   img[data-type="windows"] {
     width: 70px;
   }
-  
+
   img {
     width: 50px;
     margin: 0;
@@ -179,3 +179,73 @@ p {
 .d-flex {
   display: flex;
 }
+
+// button
+
+.button-download-wrapper {
+  width: 60px;
+  margin: 0 auto;
+}
+
+a {
+  border-radius: 2px;
+  display: inline-block;
+  height: 60px;
+  line-height: 60px;
+  margin: 5px;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+}
+
+a span {
+  background: #f2594b;
+  border-radius: 4px;
+  color: #ffffff;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: normal;
+  padding: 5px 10px;
+  position: relative;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+a span:last-child {
+  margin-left: -20px;
+}
+
+a:before,
+a:after {
+  background: #ffffff;
+  border: solid 3px #9fb4cc;
+  border-radius: 4px;
+  content: "";
+  display: block;
+  height: 35px;
+  left: 50%;
+  margin: -17px 0 0 -12px;
+  position: absolute;
+  top: 50%;
+  /*transform:translate(-50%,-50%);*/
+
+  width: 25px;
+}
+
+a:before {
+  margin: -23px 0 0 -5px;
+}
+
+a span:first-child {
+  display: none;
+}
+
+a:hover span:first-child {
+  display: inline-block;
+}
+
+a:hover span:last-child {
+  display: none;
+}
+/* custom code for the demo */

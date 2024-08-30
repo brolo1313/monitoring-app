@@ -140,7 +140,10 @@
     </ng-container>
   </div>
 </ng-container>
-
-<ng-template #loader>
-  <div class="loading-indicator">Loading system information...</div>
-</ng-template>
+<div
+  class="button-download-wrapper"
+  (click)="this.downloadDataAsFile(this.dataMocks, 'system-info.txt')"
+  align="center"
+>
+  <a href="#" download><span>Download</span><span>TXT</span></a>
+</div>
