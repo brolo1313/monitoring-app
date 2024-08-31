@@ -12,7 +12,7 @@ function logWithColor(message, colorCode = "yellow", errorMessage = "") {
 
 function showMessage(message, window) {
   logWithColor(message, "yellow");
-  if (mainWindow && mainWindow?.webContents) {
+  if (window && window?.webContents) {
     window.webContents.send("updateMessage", message);
   }
 }
