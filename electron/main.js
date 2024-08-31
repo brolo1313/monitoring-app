@@ -14,11 +14,11 @@ const log = require('electron-log');
 let mainWindow; // Define win globally
 
 //Basic flags
-autoUpdater.autoDownload = false;
+autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
 
 // Logging
-autoUpdater.logger = log;
+// autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
 
@@ -166,25 +166,29 @@ async function startMonitoring() {
 
 
 autoUpdater.on("update-available", (info) => {
+  log.info(info);
   showMessage(`Update available. Current version ${app.getVersion()}`, mainWindow);
 });
 
 autoUpdater.on("update-not-available", (info) => {
+  log.info(info);
   showMessage(`No update available. Current version ${app.getVersion()}`, mainWindow);
 });
 
-autoUpdater.on("update-downloaded", (info) => {
-  showMessage(`Update downloaded. Current version ${app.getVersion()}`, mainWindow);
+autoUpdater.on("error", (error) => {
+  log.info(error);
+  showMessage(`Error during update: ${error}`, mainWindow);
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
   let log_message = "Download speed: " + progressObj.bytesPerSecond;
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  log.info(log_message);
   showMessage(log_message, mainWindow);
 });
 
-autoUpdater.on("error", (error) => {
-  showMessage(`Error during update: ${error}`, mainWindow);
+autoUpdater.on("update-downloaded", (info) => {
+  log.info(info);
+  showMessage(`Update downloaded. Current version ${app.getVersion()}`, mainWindow);
 });
-
