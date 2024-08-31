@@ -40,7 +40,7 @@ function createWindow() {
   const { localEnv, buildEnv, isLocalTest } = getEnvUrls();
   loadAppUrl(mainWindow, localEnv, buildEnv, isLocalTest);
 
-  mainWindow.webContents.on(
+  mainWindow?.webContents.on(
     "did-fail-load",
     (event, errorCode, errorDescription, validatedURL) => {
       console.error(
@@ -154,8 +154,8 @@ async function startMonitoring() {
       };
 
       logWithColor("data is complete", "green");
-      if (mainWindow && mainWindow.webContents) {
-        mainWindow.webContents.send("system-monitoring-data", result);
+      if (mainWindow && mainWindow?.webContents) {
+        mainWindow?.webContents.send("system-monitoring-data", result);
       }
     } catch {
       logWithColor("data not received", "red", error);
@@ -165,20 +165,20 @@ async function startMonitoring() {
 
 
 
-/*New Update Available*/
 autoUpdater.on("update-available", (info) => {
-  showMessage(`Update available. Current version ${app.getVersion()}`);
-  let pth = autoUpdater.downloadUpdate();
- showMessage(pth);
+  showMessage(`Update available. Current version ${app.getVersion()}`, mainWindow);
 });
 
 autoUpdater.on("update-not-available", (info) => {
-  showMessage(`No update available. Current version ${app.getVersion()}`);
+  showMessage(`No update available ggg. Current version ${app.getVersion()}`, mainWindow);
 });
 
-/*Download Completion Message*/
 autoUpdater.on("update-downloaded", (info) => {
-  showMessage(`Update downloaded. Current version ${app.getVersion()}`);
+  showMessage(`Update downloaded. Current version ${app.getVersion()}`, mainWindow);
+});
+
+autoUpdater.on("error", (error) => {
+  showMessage(`Error during update: ${error}`, mainWindow);
 });
 
 autoUpdater.on("error", (info) => {

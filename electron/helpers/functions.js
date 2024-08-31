@@ -11,9 +11,10 @@ function logWithColor(message, colorCode = "yellow", errorMessage = "") {
 }
 
 function showMessage(message, window) {
-  logWithColor(message, 'yellow');
-  window.webContents.send("updateMessage", message);
+  logWithColor(message, "yellow");
+  if (mainWindow && mainWindow?.webContents) {
+    window.webContents.send("updateMessage", message);
+  }
 }
-
 
 module.exports = { logWithColor, showMessage };
