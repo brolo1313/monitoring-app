@@ -170,17 +170,21 @@ autoUpdater.on("update-available", (info) => {
 });
 
 autoUpdater.on("update-not-available", (info) => {
-  showMessage(`No update available ggg. Current version ${app.getVersion()}`, mainWindow);
+  showMessage(`No update available. Current version ${app.getVersion()}`, mainWindow);
 });
 
 autoUpdater.on("update-downloaded", (info) => {
   showMessage(`Update downloaded. Current version ${app.getVersion()}`, mainWindow);
 });
 
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = "Download speed: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  showMessage(log_message, mainWindow);
+});
+
 autoUpdater.on("error", (error) => {
   showMessage(`Error during update: ${error}`, mainWindow);
 });
 
-autoUpdater.on("error", (info) => {
-  curWindow.showMessage(info);
-});
