@@ -1,8 +1,8 @@
 {
   "name": "electron-monitor-app",
-  "version": "0.0.8-beta",
+  "version": "0.0.12-beta",
   "main": "electron/main.js",
-  "productName": "System Monitor",
+  "productName": "System-Monitor",
   "artifactName": "${productName}-${arch}.${ext}",
   "author": {
     "name": "Andrew Yupin",

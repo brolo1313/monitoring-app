@@ -59,7 +59,6 @@ export class SystemInfoService {
   fetchDataFromELectron() {
     if (window['electron']) {
       window['electron'].ipcRenderer.on('system-monitoring-data', (data: any) => {
-        // console.log('SystemInfoService get data', data);
         if (data?.gpuData) {
           this.gpuDataSubject.next(data.gpuData);
         }
@@ -111,18 +110,22 @@ export class SystemInfoService {
 
   checkUpdates() {
     window['electron'].ipcRenderer.on('updateMessage', (message: string) => {
-      console.log('checkUpdates services',message);
       if (message) {
         this.appUpdateData.next(message);
       }
     });
   }
+
+  getLogFile(): Promise<string> {
+    return (window as any).electron.ipcRenderer.invoke('download-log-file');
+  }
+
+
   getSystemInfo(): Promise<any> {
     if (!window.electronAPI) {
       return Promise.resolve(this.getUserMocks());
     } else {
       return (window as any).electronAPI.getSystemInfo();
-
     }
   }
 

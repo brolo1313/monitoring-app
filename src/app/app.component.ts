@@ -39,12 +39,18 @@ interface BENTO_ITEMS {
   animations: [
     trigger('bentoAnimation', [
       transition(':enter', [
-        query('.bento__item', [
+        query('.bento__item, .footer',  [
           style({ opacity: 0, transform: 'translateY(20px)' }),
           stagger(100, [
             animate('0.5s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
           ])
         ])
+      ])
+    ]),
+    trigger('footerAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('1s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ])
     ])
   ]
@@ -82,11 +88,9 @@ export class AppComponent {
   ) {
     this.isElectronApp = isElectronMode();
     if (this.isElectronApp) {
-
-      // this.getDataForElectron();
+      console.log('Run in Electron');
+      this.getDataForElectron();
       this.systemInfoService.checkUpdates();
-      this.getDataFoBrowser();
-
     } else {
       console.log('Run in browser');
       this.getDataFoBrowser();
@@ -170,8 +174,6 @@ export class AppComponent {
             }
           };
 
-
-          console.log('cpuInfo', this.cpuInfo);
           this.fillArray(this.items, arrayForFill);
         }
 
@@ -243,4 +245,20 @@ export class AppComponent {
     window.URL.revokeObjectURL(url);
   }
 
+
+  downloadLog() {
+    this.systemInfoService.getLogFile().then((data) => {
+      if (data) {
+        const blob = new Blob([data], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'main.log';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error('Failed to download the log file');
+      }
+    });
+  }
 }

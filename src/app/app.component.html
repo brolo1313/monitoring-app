@@ -139,19 +139,16 @@
       </div>
     </ng-container>
   </div>
+  <div class="footer" @footerAnimation>
+    <div class="download-wrapper">
+      <a (click)="this.downloadDataAsFile(this.dataMocks, 'system-info.txt')"
+        ><span>Download</span><span>SYS</span></a
+      >
+      <a (click)="downloadLog()"><span>Download</span><span>Log</span></a>
+    </div>
+
+    <div class="update-msg-wrapper">
+      <span class="color_white">{{ message }}</span>
+    </div>
+  </div>
 </ng-container>
-
-
-
-<div class="footer">
-  <div
-    class="button-download-wrapper"
-    (click)="this.downloadDataAsFile(this.dataMocks, 'system-info.txt')"
-    align="center"
-  >
-    <a href="#" download><span>Download</span><span>TXT</span></a>
-  </div>
-  <div>
-    <span class="color_white">{{ message }}</span>
-  </div>
-</div>

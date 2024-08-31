@@ -10,6 +10,8 @@ const EventEmitter = require("events");
 const eventEmitter = new EventEmitter();
 const { autoUpdater, AppUpdater } = require("electron-updater");
 const log = require('electron-log');
+const fs = require('fs');
+
 
 let mainWindow; // Define win globally
 
@@ -18,8 +20,11 @@ autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
 
 // Logging
-autoUpdater.logger = log;
-autoUpdater.logger?.transports?.file?.level = 'info';
+// autoUpdater.logger = log;
+if (autoUpdater.logger && autoUpdater.logger.transports && autoUpdater.logger.transports.file) {
+  autoUpdater.logger.transports.file.level = 'info';
+}
+
 log.info('App starting...');
 
 
@@ -164,31 +169,71 @@ async function startMonitoring() {
 }
 
 
+//logic to get event  from client
+//   ipcMain.handle("ping", () => {
+//       return {
+//         nameFromClient: "ping",
+//         responseFromServer: "pong",
+//         date: new Date(),
+//       };
+//     });
+
+
+ipcMain.handle('get-log-file', async () => {
+  const logFilePath = path.join(app.getPath('userData'), 'logs', 'main.log');
+  return logFilePath;
+});
+
+
+ipcMain.handle('download-log-file', async () => {
+  const logFilePath = path.join(app.getPath('userData'), 'logs', 'main.log');
+  
+  try {
+    const data = fs.readFileSync(logFilePath, 'utf8');
+    return data;
+  } catch (error) {
+    console.error('Failed to read the log file:', error);
+    return null;
+  }
+});
+
+
+
 
 autoUpdater.on("update-available", (info) => {
-  log.info(info);
+  log.info({
+    updateAvailable:info
+  });
   showMessage(`Update available. Current version ${app.getVersion()}`, mainWindow);
 });
 
 autoUpdater.on("update-not-available", (info) => {
-  log.info(info);
+  log.info({
+    updateNotAvailable:info
+  });
   showMessage(`No update available. Current version ${app.getVersion()}`, mainWindow);
 });
 
 autoUpdater.on("error", (error) => {
-  log.info(error);
-  showMessage(`Error during update: ${error}`, mainWindow);
+  log.info({
+    error: error
+  });
+  showMessage(`Error during update`, mainWindow);
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
   let log_message = "Download speed: " + progressObj.bytesPerSecond;
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-  log.info(log_message);
+  log.info({
+    downloadProgress: log_message
+  });
   showMessage(log_message, mainWindow);
 });
 
 autoUpdater.on("update-downloaded", (info) => {
-  log.info(info);
+  log.info({
+    updateDownloaded: info
+  });
   showMessage(`Update downloaded. Current version ${app.getVersion()}`, mainWindow);
 });
