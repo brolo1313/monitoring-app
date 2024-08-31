@@ -47,7 +47,7 @@
       "package.json"
     ],
     "nsis": {
-      "artifactName": "${productName}-Installer-{0.0.3-beta}.${ext}",
+      "artifactName": "${productName}-Installer-{version}.${ext}",
       "installerIcon": "src/icon.ico",
       "uninstallerIcon": "src/icon.ico",
       "uninstallDisplayName": "System Monitor",
