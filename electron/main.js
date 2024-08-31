@@ -9,7 +9,7 @@ const { logWithColor, showMessage } = require("./helpers/functions");
 const EventEmitter = require("events");
 const eventEmitter = new EventEmitter();
 const { autoUpdater, AppUpdater } = require("electron-updater");
-
+const log = require('electron-log');
 
 let mainWindow; // Define win globally
 
@@ -17,7 +17,10 @@ let mainWindow; // Define win globally
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 
-
+// Logging
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
 
 
 function createWindow() {
@@ -70,7 +73,7 @@ try {
             `Checking for updates. Current version ${app.getVersion()}`,
             mainWindow
           ),
-          autoUpdater.checkForUpdatesAndNotify();
+          autoUpdater.checkForUpdates();
          }, 5000);
     
         // Now start the monitoring
