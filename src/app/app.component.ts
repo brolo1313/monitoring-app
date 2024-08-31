@@ -54,6 +54,8 @@ export class AppComponent {
 
   angularVersion = VERSION.full;
 
+  message: string = 'Status update...';
+
   items: BENTO_ITEMS[] = [
     { type: 'battery', class: 'bento__item-3', wifiConnections: {} },
     { type: 'systemInfo', class: 'bento__item-4', systemInfo: {} },
@@ -80,14 +82,24 @@ export class AppComponent {
   ) {
     this.isElectronApp = isElectronMode();
     if (this.isElectronApp) {
-      console.log('Run in electron');
+
       // this.getDataForElectron();
+      this.systemInfoService.checkUpdates();
       this.getDataFoBrowser();
 
     } else {
       console.log('Run in browser');
       this.getDataFoBrowser();
     }
+  }
+
+  ngOnInit(): void {
+    this.systemInfoService.appUpdateMessage$.subscribe({
+      next: (msg: string) => {
+        this.message = msg;
+        this.cdRef.detectChanges()
+      }
+    })
   }
 
   private fillArray(array: any[], data: IOrganizedSystemData | any) {
@@ -202,7 +214,7 @@ export class AppComponent {
   }
 
   private getDataFoBrowser() {
-    const { gpuData, cpuInfo} = this.dataMocks;
+    const { gpuData, cpuInfo } = this.dataMocks;
     this.gpuData = gpuData;
     this.cpuInfo = cpuInfo as any;
     this.isLoading = false;
@@ -214,21 +226,21 @@ export class AppComponent {
   downloadDataAsFile(data: any, filename: string = 'data.txt') {
     // Convert the object to a JSON string
     const jsonStr = JSON.stringify(data, null, 2); // pretty print with 2 spaces
-  
+
     // Create a blob from the JSON string
     const blob = new Blob([jsonStr], { type: 'application/json' });
-  
+
     // Create a download link
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
-  
+
     // Simulate a click on the link to start the download
     a.click();
-  
+
     // Clean up by revoking the object URL
     window.URL.revokeObjectURL(url);
   }
-  
+
 }

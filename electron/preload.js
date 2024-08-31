@@ -6,7 +6,6 @@ contextBridge.exposeInMainWorld('versions', {
   chrome: () => process.versions.chrome,
   electron: () => process.versions.electron,
   ping: () => ipcRenderer.invoke('ping'),
-
 })
 
 contextBridge.exposeInMainWorld('electron', {
@@ -14,4 +13,4 @@ contextBridge.exposeInMainWorld('electron', {
     send: (channel, data) => ipcRenderer.send(channel, data),
     on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
   }
-})
+});

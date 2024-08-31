@@ -9,4 +9,11 @@ function logWithColor(message, colorCode = "yellow", errorMessage = "") {
   const output = errorMessage ? `${message}\n${errorMessage}` : message;
   console.log(`${color}${output}\x1b[0m`);
 }
-module.exports = { logWithColor };
+
+function showMessage(message, window) {
+  logWithColor(message, 'yellow');
+  window.webContents.send("updateMessage", message);
+}
+
+
+module.exports = { logWithColor, showMessage };

@@ -3,15 +3,22 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 
 const electron_1 = require("electron");
 const path = require("path");
-const WebSocket = require("ws");
 const si = require("systeminformation");
 const { loadAppUrl, getEnvUrls } = require("./helpers/loadUrl");
-const { logWithColor } = require("./helpers/functions");
+const { logWithColor, showMessage } = require("./helpers/functions");
 const EventEmitter = require("events");
 const eventEmitter = new EventEmitter();
-const { exec } = require("child_process");
+const { autoUpdater, AppUpdater } = require("electron-updater");
+
 
 let mainWindow; // Define win globally
+
+//Basic flags
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
+
+
+
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -25,7 +32,7 @@ function createWindow() {
     },
   });
 
-  mainWindow.setResizable(false)
+  mainWindow.setResizable(false);
 
   const { localEnv, buildEnv, isLocalTest } = getEnvUrls();
   loadAppUrl(mainWindow, localEnv, buildEnv, isLocalTest);
@@ -57,7 +64,20 @@ try {
     setTimeout(() => createWindow(), 500);
 
     eventEmitter.on("windowReady", () => {
-      // startMonitoring();
+      if (mainWindow) {
+         setTimeout(() => {
+          showMessage(
+            `Checking for updates. Current version ${app.getVersion()}`,
+            mainWindow
+          ),
+          autoUpdater.checkForUpdatesAndNotify();
+         }, 5000);
+    
+        // Now start the monitoring
+        startMonitoring();
+      } else {
+        console.error("mainWindow is not initialized");
+      }
     });
   });
 
@@ -81,11 +101,6 @@ try {
   logWithColor("App window error was occurred", "red");
   throw e;
 }
-
-// ipcMain.on("get-gpu-temperature", async (event) => {
-//   const gpuData = await si.graphics();
-//   event.reply("system-monitoring-data", gpuData);
-// });
 
 async function startMonitoring() {
   logWithColor("startMonitoring", "yellow");
@@ -136,18 +151,33 @@ async function startMonitoring() {
       };
 
       logWithColor("data is complete", "green");
-      mainWindow.webContents.send("system-monitoring-data", result);
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.send("system-monitoring-data", result);
+      }
     } catch {
       logWithColor("data not received", "red", error);
     }
   }, 10000);
 }
 
-//logic to get event  from client
-//   ipcMain.handle("ping", () => {
-//       return {
-//         nameFromClient: "ping",
-//         responseFromServer: "pong",
-//         date: new Date(),
-//       };
-//     });
+
+
+/*New Update Available*/
+autoUpdater.on("update-available", (info) => {
+  showMessage(`Update available. Current version ${app.getVersion()}`);
+  let pth = autoUpdater.downloadUpdate();
+ showMessage(pth);
+});
+
+autoUpdater.on("update-not-available", (info) => {
+  showMessage(`No update available. Current version ${app.getVersion()}`);
+});
+
+/*Download Completion Message*/
+autoUpdater.on("update-downloaded", (info) => {
+  showMessage(`Update downloaded. Current version ${app.getVersion()}`);
+});
+
+autoUpdater.on("error", (info) => {
+  curWindow.showMessage(info);
+});
