@@ -39,7 +39,7 @@ interface BENTO_ITEMS {
   animations: [
     trigger('bentoAnimation', [
       transition(':enter', [
-        query('.bento__item, .footer',  [
+        query('.bento__item, .footer', [
           style({ opacity: 0, transform: 'translateY(20px)' }),
           stagger(100, [
             animate('0.5s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
@@ -248,18 +248,21 @@ export class AppComponent {
 
 
   downloadLog() {
-    this.systemInfoService.getLogFile().then((data) => {
-      if (data) {
-        const blob = new Blob([data], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'main.log';
-        a.click();
-        window.URL.revokeObjectURL(url);
-      } else {
-        console.error('Failed to download the log file');
-      }
-    });
+    this.systemInfoService.getLogFile()
+      .then((data) => {
+        if (data) {
+          console.log('asd');
+          const blob = new Blob([data], { type: 'text/plain' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'main.log';
+          a.click();
+          window.URL.revokeObjectURL(url);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to download the log file:', error);
+      });
   }
 }

@@ -44,7 +44,6 @@ try {
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   // Added 500 ms to fix the black background issue while using transparent window.
-
   mainWindowInstance = new MainScreen();
   app.on("ready", () => {
     setTimeout(() => (mainWindow = mainWindowInstance.createWindow()), 500);
@@ -91,17 +90,27 @@ try {
     // Remove event listeners
     mainWindowInstance?.eventEmitter?.removeAllListeners();
 
-    log.info(`${colors.fg.magenta}Handled logic before quite...${colors.reset}`);
+    log.info(
+      `${colors.fg.magenta}Handled logic before quite...${colors.reset}`
+    );
   });
 } catch (e) {
-  log.info(`${colors.fg.red} App window error was occurred ${colors.reset}`);
+  log.error(`${colors.fg.red} App window error was occurred ${colors.reset}`);
   throw e;
 }
 
 //Listen fir client events
-ipcMain.handle("download-log-file", downloadLogFile);
-
-
+ipcMain.handle("download-log-file", async () => {
+  try {
+    const data = await downloadLogFile();
+    return data;
+  } catch (error) {
+    log.error(
+      `${colors.fg.red} ${"Failed to load log file"}, ${error} ${colors.reset}`
+    );
+    throw error;
+  }
+});
 
 autoUpdater.on("update-available", (info) => {
   log.info({

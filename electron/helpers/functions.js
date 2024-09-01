@@ -2,6 +2,7 @@ const log = require("electron-log");
 const { colors } = require("./constants");
 const path = require("path");
 const fs = require("fs");
+// const { app } = require("electron");
 
 const colorsAdditional = {
   green: "\x1b[32m",
@@ -46,7 +47,7 @@ async function startMonitoring(si, mainWindow) {
 
       log.info(`${colors.fg.green}Cached data has been received${colors.reset}`);
     } catch {
-      log.info(`${colors.fg.red}cached data ain't fetched${colors.reset}`);
+      log.error(`${colors.fg.red}cached data ain't fetched${colors.reset}`);
     }
   }
 
@@ -80,7 +81,7 @@ async function startMonitoring(si, mainWindow) {
         mainWindow?.webContents.send("system-monitoring-data", result);
       }
     } catch {
-      log.info(`${colors.fg.red}data not received${colors.reset}`);
+      log.error(`${colors.fg.red}data not received${colors.reset}`);
     }
   }, 10000);
 }
@@ -93,8 +94,7 @@ async function downloadLogFile() {
     const data = await fs.promises.readFile(logFilePath, "utf8");
     return data;
   } catch (error) {
-    log.info(`${colors.fg.red} ${"Failed to read the log file:", error} ${colors.reset}`);
-    return null;
+    return { error: new Error("Failed to read log file"), data: null };
   }
-};
+}
 module.exports = { logWithColor, showMessage, startMonitoring, downloadLogFile };
