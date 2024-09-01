@@ -4,10 +4,15 @@ const { app, ipcMain } = require("electron");
 const electron_1 = require("electron");
 const path = require("path");
 const si = require("systeminformation");
-const { logWithColor, showMessage } = require("./helpers/functions");
+const {
+  logWithColor,
+  showMessage,
+  startMonitoring,
+} = require("./helpers/functions");
 const { autoUpdater, AppUpdater } = require("electron-updater");
 const log = require("electron-log");
 const fs = require("fs");
+const { colors } = require("./helpers/constants");
 
 const MainScreen = require("./classes/mainScreen");
 
@@ -17,6 +22,9 @@ let mainWindow; // Define win globally
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
 
+log.transports.file.level = true;
+log.transports.console.level = true;
+
 // Logging
 // autoUpdater.logger = log;
 if (
@@ -24,10 +32,11 @@ if (
   autoUpdater.logger.transports &&
   autoUpdater.logger.transports.file
 ) {
-  autoUpdater.logger.transports.file.level = "info";
+  autoUpdater.logger.transports.file.level = true;
+  autoUpdater.logger.transports.console.level = false;
 }
 
-log.info("App starting...");
+log.info(`${colors.fg.blue}App starting...${colors.reset}`);
 
 try {
   // This method will be called when Electron has finished
@@ -49,8 +58,7 @@ try {
             autoUpdater.checkForUpdates();
         }, 5000);
 
-        // Now start the monitoring
-        startMonitoring();
+        startMonitoring(si, mainWindow);
       } else {
         console.error("mainWindow is not initialized");
       }
@@ -64,7 +72,7 @@ try {
     if (process.platform !== "darwin") {
       electron_1.app.quit();
     }
-    logWithColor("app exit", "red");
+    log.info(`${colors.fg.red} app exit ${colors.reset}`);
   });
   app.on("activate", () => {
     // On OS X it's common to re-create a window in the app when the
@@ -74,66 +82,8 @@ try {
     }
   });
 } catch (e) {
-  logWithColor("App window error was occurred", "red");
+  log.info(`${colors.fg.red} App window error was occurred ${colors.reset}`);
   throw e;
-}
-
-async function startMonitoring() {
-  logWithColor("startMonitoring", "yellow");
-
-  // Initialize variables to store data that doesn't need to be fetched repeatedly
-  let cachedCpu, cachedUsers, cachedSystem, cachedOsInfo, cachedBios;
-
-  // Fetch and cache the data that doesn't change frequently
-  if (
-    !cachedCpu ||
-    !cachedUsers ||
-    !cachedSystem ||
-    !cachedOsInfo ||
-    !cachedBios
-  ) {
-    try {
-      cachedCpu = await si.cpu();
-      cachedUsers = await si.users();
-      cachedSystem = await si.system();
-      cachedOsInfo = await si.osInfo();
-      cachedBios = await si.bios();
-
-      logWithColor("Cached data has been received", "green");
-    } catch {
-      logWithColor("cached data ain't fetched", "red", error);
-    }
-  }
-
-  setInterval(async () => {
-    try {
-      const gpuData = await si.graphics();
-      const currentLoad = await si.currentLoad();
-      const mem = await si.mem();
-      const battery = await si.battery();
-      const wifiConnections = await si.wifiConnections();
-
-      const result = {
-        gpuData,
-        currentLoad,
-        mem,
-        battery,
-        wifiConnections,
-        cpu: cachedCpu,
-        users: cachedUsers,
-        system: cachedSystem,
-        osInfo: cachedOsInfo,
-        bios: cachedBios,
-      };
-
-      logWithColor("data is complete", "green");
-      if (mainWindow && mainWindow?.webContents) {
-        mainWindow?.webContents.send("system-monitoring-data", result);
-      }
-    } catch {
-      logWithColor("data not received", "red", error);
-    }
-  }, 10000);
 }
 
 //logic to get event  from client

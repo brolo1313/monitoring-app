@@ -89,7 +89,6 @@ export class AppComponent {
     this.isElectronApp = isElectronMode();
     if (this.isElectronApp) {
       console.log('Run in Electron');
-      // this.getDataFoBrowser();
 
       this.getDataForElectron();
       this.systemInfoService.checkUpdates();
