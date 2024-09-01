@@ -1,17 +1,15 @@
 // main.js
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, ipcMain } = require("electron");
 
 const electron_1 = require("electron");
 const path = require("path");
 const si = require("systeminformation");
-const { loadAppUrl, getEnvUrls } = require("./helpers/loadUrl");
 const { logWithColor, showMessage } = require("./helpers/functions");
-const EventEmitter = require("events");
-const eventEmitter = new EventEmitter();
 const { autoUpdater, AppUpdater } = require("electron-updater");
-const log = require('electron-log');
-const fs = require('fs');
+const log = require("electron-log");
+const fs = require("fs");
 
+const MainScreen = require("./classes/mainScreen");
 
 let mainWindow; // Define win globally
 
@@ -21,66 +19,36 @@ autoUpdater.autoInstallOnAppQuit = true;
 
 // Logging
 // autoUpdater.logger = log;
-if (autoUpdater.logger && autoUpdater.logger.transports && autoUpdater.logger.transports.file) {
-  autoUpdater.logger.transports.file.level = 'info';
+if (
+  autoUpdater.logger &&
+  autoUpdater.logger.transports &&
+  autoUpdater.logger.transports.file
+) {
+  autoUpdater.logger.transports.file.level = "info";
 }
 
-log.info('App starting...');
-
-
-function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, "../electron/preload.js"),
-      contextIsolation: true,
-      enableRemoteModule: false,
-      nodeIntegration: true,
-    },
-  });
-
-  mainWindow.setResizable(false);
-
-  const { localEnv, buildEnv, isLocalTest } = getEnvUrls();
-  loadAppUrl(mainWindow, localEnv, buildEnv, isLocalTest);
-
-  mainWindow?.webContents.on(
-    "did-fail-load",
-    (event, errorCode, errorDescription, validatedURL) => {
-      console.error(
-        `Failed to load ${validatedURL}: ${errorDescription} (${errorCode})`
-      );
-      // You can display a fallback page or a custom error message here
-      loadAppUrl(mainWindow, localEnv, buildEnv, isLocalTest);
-    }
-  );
-
-  if (mainWindow instanceof BrowserWindow) {
-    eventEmitter.emit("windowReady");
-  }
-
-  return mainWindow;
-}
+log.info("App starting...");
 
 try {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   // Added 500 ms to fix the black background issue while using transparent window.
-  app.on("ready", () => {
-    setTimeout(() => createWindow(), 500);
 
-    eventEmitter.on("windowReady", () => {
+  mainWindowInstance = new MainScreen();
+  app.on("ready", () => {
+    setTimeout(() => (mainWindow = mainWindowInstance.createWindow()), 500);
+
+    mainWindowInstance.eventEmitter.on("windowReady", () => {
       if (mainWindow) {
-         setTimeout(() => {
+        setTimeout(() => {
           showMessage(
             `Checking for updates. Current version ${app.getVersion()}`,
             mainWindow
           ),
-          autoUpdater.checkForUpdates();
-         }, 5000);
-    
+            autoUpdater.checkForUpdates();
+        }, 5000);
+
         // Now start the monitoring
         startMonitoring();
       } else {
@@ -168,7 +136,6 @@ async function startMonitoring() {
   }, 10000);
 }
 
-
 //logic to get event  from client
 //   ipcMain.handle("ping", () => {
 //       return {
@@ -178,62 +145,72 @@ async function startMonitoring() {
 //       };
 //     });
 
-
-ipcMain.handle('get-log-file', async () => {
-  const logFilePath = path.join(app.getPath('userData'), 'logs', 'main.log');
+ipcMain.handle("get-log-file", async () => {
+  const logFilePath = path.join(app.getPath("userData"), "logs", "main.log");
   return logFilePath;
 });
 
+ipcMain.handle("download-log-file", async () => {
+  const logFilePath = path.join(app.getPath("userData"), "logs", "main.log");
 
-ipcMain.handle('download-log-file', async () => {
-  const logFilePath = path.join(app.getPath('userData'), 'logs', 'main.log');
-  
   try {
-    const data = fs.readFileSync(logFilePath, 'utf8');
+    const data = fs.readFileSync(logFilePath, "utf8");
     return data;
   } catch (error) {
-    console.error('Failed to read the log file:', error);
+    console.error("Failed to read the log file:", error);
     return null;
   }
 });
 
-
-
-
 autoUpdater.on("update-available", (info) => {
   log.info({
-    updateAvailable:info
+    updateAvailable: info,
   });
-  showMessage(`Update available. Current version ${app.getVersion()}`, mainWindow);
+  showMessage(
+    `Update available. Current version ${app.getVersion()}`,
+    mainWindow
+  );
 });
 
 autoUpdater.on("update-not-available", (info) => {
   log.info({
-    updateNotAvailable:info
+    updateNotAvailable: info,
   });
-  showMessage(`No update available. Current version ${app.getVersion()}`, mainWindow);
+  showMessage(
+    `No update available. Current version ${app.getVersion()}`,
+    mainWindow
+  );
 });
 
 autoUpdater.on("error", (error) => {
   log.info({
-    error: error
+    error: error,
   });
   showMessage(`Error during update`, mainWindow);
 });
 
-autoUpdater.on('download-progress', (progressObj) => {
+autoUpdater.on("download-progress", (progressObj) => {
   let log_message = "Download speed: " + progressObj.bytesPerSecond;
-  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  log_message = log_message + " - Downloaded " + progressObj.percent + "%";
+  log_message =
+    log_message +
+    " (" +
+    progressObj.transferred +
+    "/" +
+    progressObj.total +
+    ")";
   log.info({
-    downloadProgress: log_message
+    downloadProgress: log_message,
   });
   showMessage(log_message, mainWindow);
 });
 
 autoUpdater.on("update-downloaded", (info) => {
   log.info({
-    updateDownloaded: info
+    updateDownloaded: info,
   });
-  showMessage(`Update downloaded. Current version ${app.getVersion()}`, mainWindow);
+  showMessage(
+    `Update downloaded. Current version ${app.getVersion()}`,
+    mainWindow
+  );
 });
