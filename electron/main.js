@@ -2,40 +2,24 @@
 const { app, ipcMain } = require("electron");
 
 const electron_1 = require("electron");
-const path = require("path");
 const si = require("systeminformation");
 const {
   showMessage,
   startMonitoring,
   downloadLogFile,
 } = require("./helpers/functions");
-const { autoUpdater, AppUpdater } = require("electron-updater");
 const log = require("electron-log");
-const fs = require("fs");
+
 const { colors } = require("./helpers/constants");
 
 const MainScreen = require("./classes/mainScreen");
+const AutoUpdater = require("./classes/autoUpdater");
 
 let mainWindow; // Define win globally
 let monitoringInterval;
 
-//Basic flags
-autoUpdater.autoDownload = true;
-autoUpdater.autoInstallOnAppQuit = true;
-
 log.transports.file.level = true;
 log.transports.console.level = true;
-
-// Logging
-// autoUpdater.logger = log;
-if (
-  autoUpdater.logger &&
-  autoUpdater.logger.transports &&
-  autoUpdater.logger.transports.file
-) {
-  autoUpdater.logger.transports.file.level = true;
-  autoUpdater.logger.transports.console.level = false;
-}
 
 log.info(`${colors.fg.blue}App starting...${colors.reset}`);
 
@@ -50,15 +34,18 @@ try {
 
     mainWindowInstance.eventEmitter.on("windowReady", () => {
       if (mainWindow) {
+        monitoringInterval = startMonitoring(si, mainWindow);
+
         setTimeout(() => {
           showMessage(
             `Checking for updates. Current version ${app.getVersion()}`,
             mainWindow
-          ),
-            autoUpdater.checkForUpdates();
-        }, 5000);
+          );
+          const updater = new AutoUpdater(mainWindow);
 
-        monitoringInterval = startMonitoring(si, mainWindow);
+          updater.registerEvents();
+          updater.checkForUpdates();
+        }, 5000);
       } else {
         console.error("mainWindow is not initialized");
       }
@@ -110,57 +97,4 @@ ipcMain.handle("download-log-file", async () => {
     );
     throw error;
   }
-});
-
-autoUpdater.on("update-available", (info) => {
-  log.info({
-    updateAvailable: info,
-  });
-  showMessage(
-    `Update available. Current version ${app.getVersion()}`,
-    mainWindow
-  );
-});
-
-autoUpdater.on("update-not-available", (info) => {
-  log.info({
-    updateNotAvailable: info,
-  });
-  showMessage(
-    `No update available. Current version ${app.getVersion()}`,
-    mainWindow
-  );
-});
-
-autoUpdater.on("error", (error) => {
-  log.info({
-    error: error,
-  });
-  showMessage(`Error during update`, mainWindow);
-});
-
-autoUpdater.on("download-progress", (progressObj) => {
-  let log_message = "Download speed: " + progressObj.bytesPerSecond;
-  log_message = log_message + " - Downloaded " + progressObj.percent + "%";
-  log_message =
-    log_message +
-    " (" +
-    progressObj.transferred +
-    "/" +
-    progressObj.total +
-    ")";
-  log.info({
-    downloadProgress: log_message,
-  });
-  showMessage(log_message, mainWindow);
-});
-
-autoUpdater.on("update-downloaded", (info) => {
-  log.info({
-    updateDownloaded: info,
-  });
-  showMessage(
-    `Update downloaded. Current version ${app.getVersion()}`,
-    mainWindow
-  );
 });

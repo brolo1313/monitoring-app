@@ -2,7 +2,7 @@ const log = require("electron-log");
 const { colors } = require("./constants");
 const path = require("path");
 const fs = require("fs");
-// const { app } = require("electron");
+const { app } = require("electron");
 
 const colorsAdditional = {
   green: "\x1b[32m",
