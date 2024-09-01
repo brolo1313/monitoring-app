@@ -1,5 +1,7 @@
 const log = require("electron-log");
 const { colors } = require("./constants");
+const path = require("path");
+const fs = require("fs");
 
 const colorsAdditional = {
   green: "\x1b[32m",
@@ -83,4 +85,16 @@ async function startMonitoring(si, mainWindow) {
   }, 10000);
 }
 
-module.exports = { logWithColor, showMessage, startMonitoring };
+
+async function downloadLogFile() {
+  const logFilePath = path.join(app.getPath("userData"), "logs", "main.log");
+
+  try {
+    const data = await fs.promises.readFile(logFilePath, "utf8");
+    return data;
+  } catch (error) {
+    log.info(`${colors.fg.red} ${"Failed to read the log file:", error} ${colors.reset}`);
+    return null;
+  }
+};
+module.exports = { logWithColor, showMessage, startMonitoring, downloadLogFile };

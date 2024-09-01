@@ -5,9 +5,9 @@ const electron_1 = require("electron");
 const path = require("path");
 const si = require("systeminformation");
 const {
-  logWithColor,
   showMessage,
   startMonitoring,
+  downloadLogFile,
 } = require("./helpers/functions");
 const { autoUpdater, AppUpdater } = require("electron-updater");
 const log = require("electron-log");
@@ -17,6 +17,7 @@ const { colors } = require("./helpers/constants");
 const MainScreen = require("./classes/mainScreen");
 
 let mainWindow; // Define win globally
+let monitoringInterval;
 
 //Basic flags
 autoUpdater.autoDownload = true;
@@ -58,7 +59,7 @@ try {
             autoUpdater.checkForUpdates();
         }, 5000);
 
-        startMonitoring(si, mainWindow);
+        monitoringInterval = startMonitoring(si, mainWindow);
       } else {
         console.error("mainWindow is not initialized");
       }
@@ -81,36 +82,26 @@ try {
       createWindow();
     }
   });
+  app.on("before-quit", () => {
+    // Clean up resources here
+    if (monitoringInterval) {
+      clearInterval(monitoringInterval); // Stop any intervals
+    }
+
+    // Remove event listeners
+    mainWindowInstance?.eventEmitter?.removeAllListeners();
+
+    log.info(`${colors.fg.magenta}Handled logic before quite...${colors.reset}`);
+  });
 } catch (e) {
   log.info(`${colors.fg.red} App window error was occurred ${colors.reset}`);
   throw e;
 }
 
-//logic to get event  from client
-//   ipcMain.handle("ping", () => {
-//       return {
-//         nameFromClient: "ping",
-//         responseFromServer: "pong",
-//         date: new Date(),
-//       };
-//     });
+//Listen fir client events
+ipcMain.handle("download-log-file", downloadLogFile);
 
-ipcMain.handle("get-log-file", async () => {
-  const logFilePath = path.join(app.getPath("userData"), "logs", "main.log");
-  return logFilePath;
-});
 
-ipcMain.handle("download-log-file", async () => {
-  const logFilePath = path.join(app.getPath("userData"), "logs", "main.log");
-
-  try {
-    const data = fs.readFileSync(logFilePath, "utf8");
-    return data;
-  } catch (error) {
-    console.error("Failed to read the log file:", error);
-    return null;
-  }
-});
 
 autoUpdater.on("update-available", (info) => {
   log.info({
