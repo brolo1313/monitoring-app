@@ -186,7 +186,9 @@ p {
 
 .footer {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+
+  margin: 0 1rem;
 }
 
 .update-msg-wrapper {

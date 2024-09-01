@@ -47,7 +47,7 @@ try {
           updater.checkForUpdates();
         }, 5000);
       } else {
-        console.error("mainWindow is not initialized");
+        log.error(`${colors.fg.red} Main Window is not initialized ${colors.reset}`);
       }
     });
   });
