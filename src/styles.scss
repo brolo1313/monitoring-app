@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import "styles/_normalize";
+@import "styles/helpers";
 
 body {
   display: grid;
@@ -11,3 +12,4 @@ body {
 app-root {
   overflow: hidden;
 }
+

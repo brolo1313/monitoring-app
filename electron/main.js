@@ -34,7 +34,7 @@ try {
 
     mainWindowInstance.eventEmitter.on("windowReady", () => {
       if (mainWindow) {
-        monitoringInterval = startMonitoring(si, mainWindow);
+        // monitoringInterval = startMonitoring(si, mainWindow);
 
         setTimeout(() => {
           showMessage(

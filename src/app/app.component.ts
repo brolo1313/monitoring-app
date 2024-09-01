@@ -11,6 +11,7 @@ import { RoundMath } from './helpers/math-round.pipe';
 import { LoaderComponent } from './components/loader/loader.component';
 import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
 import { GbConvertPipe } from './helpers/gb-convert.pipe';
+import { FooterComponent } from './components/footer/footer.component';
 
 declare global {
   interface Window {
@@ -33,7 +34,7 @@ interface BENTO_ITEMS {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RoundMath, LoaderComponent, GbConvertPipe],
+  imports: [CommonModule, RouterOutlet, RoundMath, LoaderComponent, GbConvertPipe, FooterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: [
@@ -78,6 +79,7 @@ export class AppComponent {
   public isLoading: boolean = true;
   public isDataReceived: boolean = false;
 
+  collectedData: any;
   gpuData!: IGpuData | any;
   cpuInfo!: ICpuInfo;
   versions!: any;
@@ -90,8 +92,10 @@ export class AppComponent {
     if (this.isElectronApp) {
       console.log('Run in Electron');
 
-      this.getDataForElectron();
-      this.systemInfoService.checkUpdates();
+      this.getDataFoBrowser();
+
+      // this.getDataForElectron();
+      // this.systemInfoService.checkUpdates();
     } else {
       console.log('Run in browser');
       this.getDataFoBrowser();
@@ -175,6 +179,11 @@ export class AppComponent {
             }
           };
 
+          this.collectedData = {
+            arrayForFill,
+            cpuInfo: this.cpuInfo,
+            gpuData: this.gpuData
+          }
           this.fillArray(this.items, arrayForFill);
         }
 
@@ -226,43 +235,4 @@ export class AppComponent {
   }
 
 
-  downloadDataAsFile(data: any, filename: string = 'data.txt') {
-    // Convert the object to a JSON string
-    const jsonStr = JSON.stringify(data, null, 2); // pretty print with 2 spaces
-
-    // Create a blob from the JSON string
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-
-    // Create a download link
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-
-    // Simulate a click on the link to start the download
-    a.click();
-
-    // Clean up by revoking the object URL
-    window.URL.revokeObjectURL(url);
-  }
-
-
-  downloadLog() {
-    this.systemInfoService.getLogFile()
-      .then((data) => {
-        if (data) {
-          console.log('asd');
-          const blob = new Blob([data], { type: 'text/plain' });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'main.log';
-          a.click();
-          window.URL.revokeObjectURL(url);
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to download the log file:', error);
-      });
-  }
 }
