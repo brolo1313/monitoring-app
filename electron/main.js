@@ -91,7 +91,7 @@ ipcMain.handle("download-log-file", async () => {
   try {
     const data = await downloadLogFile();
     log.info(
-      `${colors.fg.green} ${"Successful to load log file"}, ${error} ${colors.reset}`
+      `${colors.fg.green} ${"Successful to load log file"} ${colors.reset}`
     );
     return data;
   } catch (error) {

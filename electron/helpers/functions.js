@@ -83,7 +83,7 @@ async function startMonitoring(si, mainWindow) {
     } catch {
       log.error(`${colors.fg.red}data not received${colors.reset}`);
     }
-  }, 10000);
+  }, 15000);
 }
 
 

@@ -60,19 +60,23 @@
     </div>
 
     <div class="bento__item bento__item-2">
-      <h3>{{ gpuData.controllers[0].model }}</h3>
-      <small>{{ gpuData.controllers[0].driverVersion }}V</small>
-      <p
-        [ngClass]="{
-          color_red: isRed(gpuData?.controllers[0], 'gpu'),
-          color_green: isGreen(gpuData?.controllers[0], 'gpu')
-        }"
-      >
-        {{ gpuData.controllers[0].temperatureGpu }}&deg;
-      </p>
-      <div class="image-wrapper">
-        <img [src]="'assets/icons/gpu.svg'" alt="GPU" data-type="gpu" />
-      </div>
+      <ng-container *ngFor="let card of gpuData.controllers">
+        <ng-container *ngIf="card.vendor === 'NVIDIA'">
+          <h3>{{ card.model }}</h3>
+          <small>{{ card.driverVersion }}V</small>
+          <p
+            [ngClass]="{
+              color_red: isRed(card, 'gpu'),
+              color_green: isGreen(card, 'gpu')
+            }"
+          >
+            {{card.temperatureGpu }}&deg;
+          </p>
+          <div class="image-wrapper">
+            <img [src]="'assets/icons/gpu.svg'" alt="GPU" data-type="gpu" />
+          </div>
+        </ng-container>
+      </ng-container>
     </div>
     <ng-container *ngFor="let item of items">
       <div class="bento__item" [ngClass]="item.class">
