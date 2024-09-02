@@ -92,10 +92,8 @@ export class AppComponent {
     if (this.isElectronApp) {
       console.log('Run in Electron');
 
-      this.getDataFoBrowser();
-
-      // this.getDataForElectron();
-      // this.systemInfoService.checkUpdates();
+      this.getDataForElectron();
+      this.systemInfoService.checkUpdates();
     } else {
       console.log('Run in browser');
       this.getDataFoBrowser();

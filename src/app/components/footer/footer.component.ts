@@ -34,23 +34,29 @@ export class FooterComponent {
   systemInfoService = inject(SystemInfoService);
 
   downloadDataAsFile(data: any, filename: string = 'data.txt') {
-    // Convert the object to a JSON string
-    const jsonStr = JSON.stringify(data, null, 2); // pretty print with 2 spaces
-
-    // Create a blob from the JSON string
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-
-    // Create a download link
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-
-    // Simulate a click on the link to start the download
-    a.click();
-
-    // Clean up by revoking the object URL
-    window.URL.revokeObjectURL(url);
+    try {
+      // Convert the object to a JSON string
+      const jsonStr = JSON.stringify(data, null, 2); // pretty print with 2 spaces
+  
+      // Create a blob from the JSON string
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+  
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+  
+      // Simulate a click on the link to start the download
+      a.click();
+  
+      // Clean up by revoking the object URL
+      window.URL.revokeObjectURL(url);
+      console.log('url', url);
+      console.log('data on load', data);
+    } catch (error) {
+      console.error('Failed to download the file:', error);
+    }
   }
 
 

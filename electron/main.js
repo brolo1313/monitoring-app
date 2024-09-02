@@ -34,7 +34,7 @@ try {
 
     mainWindowInstance.eventEmitter.on("windowReady", () => {
       if (mainWindow) {
-        // monitoringInterval = startMonitoring(si, mainWindow);
+        monitoringInterval = startMonitoring(si, mainWindow);
 
         setTimeout(() => {
           showMessage(
@@ -90,6 +90,9 @@ try {
 ipcMain.handle("download-log-file", async () => {
   try {
     const data = await downloadLogFile();
+    log.info(
+      `${colors.fg.green} ${"Successful to load log file"}, ${error} ${colors.reset}`
+    );
     return data;
   } catch (error) {
     log.error(
