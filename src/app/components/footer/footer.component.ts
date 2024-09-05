@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { SystemInfoService } from '../../services/system-info-service';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-footer',
@@ -24,6 +25,14 @@ import { SystemInfoService } from '../../services/system-info-service';
 `,
   styleUrl: './footer.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('footerAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('1s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class FooterComponent {
 

@@ -1,0 +1,11 @@
+<div class="tabs">
+  <button *ngFor="let tab of tabs; let i = index" (click)="selectTab(i)">
+    {{ tab.label }}
+  </button>
+</div>
+<ng-container *ngIf="selectedTabIndex === 0">
+  <ng-content select="[tabContent1]"></ng-content>
+</ng-container>
+<ng-container *ngIf="selectedTabIndex === 1">
+  <ng-content select="[tabContent2]"></ng-content>
+</ng-container>

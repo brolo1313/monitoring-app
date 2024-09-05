@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, pairwise } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { system_mocks } from '../mocks';
 
 interface SystemData {
   bios: {},
@@ -35,6 +36,8 @@ export class SystemInfoService {
   private electronVersionSubject = new BehaviorSubject<any>(null);
 
   private appUpdateData = new BehaviorSubject<any>('Status update...');
+  private isLoading = new BehaviorSubject<any>(true);
+  private collectedDataSubject = new BehaviorSubject<any>(null);
 
   private intervalId: any;
 
@@ -54,60 +57,96 @@ export class SystemInfoService {
   electronVersion$ = this.electronVersionSubject.asObservable();
 
   appUpdateMessage$ = this.appUpdateData.asObservable();
+  isLoading$ = this.isLoading.asObservable();
+  collectedData$ = this.collectedDataSubject.asObservable();
 
 
-  fetchDataFromELectron() {
+  public dataMocks = system_mocks;
+
+  fetchDataFromElectron() {
     if (window['electron']) {
       window['electron'].ipcRenderer.on('system-monitoring-data', (data: any) => {
-        if (data?.gpuData) {
-          this.gpuDataSubject.next(data.gpuData);
-        }
 
-        if (data?.currentLoad) {
-          this.currentLoad.next(data.currentLoad);
-        }
+        this.combineSystemData();
 
-        if (data?.bios) {
-          this.biosSubject.next(data.bios);
-        }
+        this.gpuDataSubject.next(data?.gpuData || null);
+        this.currentLoad.next(data?.currentLoad || null);
+        this.biosSubject.next(data?.bios || null);
+        this.cpuSubject.next(data?.cpu || null);
+        this.memSubject.next(data?.mem || null);
+        this.systemSubject.next(data?.system || null);
+        this.batterySubject.next(data?.battery || null);
+        this.usersSubject.next(data?.users || null);
+        this.osInfoSubject.next(data?.osInfo || null);
+        this.wifiConnectionsSubject.next(data?.wifiConnections || null);
 
-        if (data?.mem) {
-          this.memSubject.next(data.mem);
-        }
-
-        if (data?.system) {
-          this.systemSubject.next(data.system);
-        }
-
-        if (data?.osInfo) {
-          this.osInfoSubject.next(data.osInfo);
-        }
-
-        if (data?.battery) {
-          this.batterySubject.next(data.battery);
-        }
-
-        if (data?.wifiConnections) {
-          this.wifiConnectionsSubject.next(data.wifiConnections);
-        }
-
-        if (data?.users) {
-          this.usersSubject.next(data.users);
-        }
-
-        if (data?.cpu) {
-          this.cpuSubject.next(data.cpu);
-        }
       });
-    }
 
-    if (window.versions) {
-      this.nodeVersionSubject.next(window.versions.node());
-      this.chromeVersionSubject.next(window.versions.chrome());
-      this.electronVersionSubject.next(window.versions.electron());
+      if (window.versions) {
+        this.nodeVersionSubject.next(window.versions.node());
+        this.chromeVersionSubject.next(window.versions.chrome());
+        this.electronVersionSubject.next(window.versions.electron());
+      }
     }
   }
 
+  private combineSystemData() {
+    combineLatest([
+      this.gpuDataSubject,
+      this.currentLoad.pipe(pairwise()),
+      this.systemSubject,
+      this.memSubject,
+      this.cpuSubject,
+      this.biosSubject,
+      this.usersSubject,
+      this.osInfoSubject,
+      this.batterySubject,
+      this.wifiConnectionsSubject,
+      this.nodeVersionSubject,
+      this.chromeVersionSubject,
+      this.electronVersionSubject,
+    ]).subscribe({
+      next: ([gpuData, [prevCurrentLoad, currentLoad], system, mem, cpu, bios, users, osInfo, battery, wifiConnections, nodeVersion, chromeVersion, electronVersion]) => {
+
+
+        if (!gpuData || !system || !cpu || !bios || !users || !mem || !osInfo || !battery || !wifiConnections) {
+          console.log('Some data not been received');
+          return;
+        }
+
+        if (true) {
+          const collectedData = {
+            systemInfo: { system, bios, users, osInfo },
+            battery: battery,
+            wifiConnections: wifiConnections,
+            memory: mem,
+            gpuData: gpuData,
+            versions: {
+              nodeVersion,
+              chromeVersion,
+              electronVersion,
+            },
+            cpuInfo: {
+              coresLoading: {
+                prevCurrentLoad: prevCurrentLoad,
+                currentLoad: currentLoad
+              },
+              details: cpu,
+            }
+          };
+
+          this.isLoading.next(false);
+          this.collectedDataSubject.next(collectedData);
+        }
+
+
+      },
+      error: (err) => {
+        console.error('Error fetching system info:', err);
+        this.isLoading.next(false);
+      },
+    });
+  }
   checkUpdates() {
     window['electron'].ipcRenderer.on('updateMessage', (message: string) => {
       if (message) {
@@ -116,22 +155,19 @@ export class SystemInfoService {
     });
   }
 
+  getDataFoBrowser() {
+    const { cpuInfo } = this.dataMocks;
+    const result = {
+      ...this.dataMocks,
+      cpuInfo: cpuInfo,
+
+    };
+    this.collectedDataSubject.next(result);
+    this.isLoading.next(false);
+  }
+
+
   getLogFile(): Promise<string> {
     return (window as any).electron.ipcRenderer.invoke('download-log-file');
-  }
-
-
-  getSystemInfo(): Promise<any> {
-    if (!window.electronAPI) {
-      return Promise.resolve(this.getUserMocks());
-    } else {
-      return (window as any).electronAPI.getSystemInfo();
-    }
-  }
-
-  getUserMocks() {
-    return {
-      name: 'browser User',
-    }
   }
 }

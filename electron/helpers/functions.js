@@ -25,7 +25,7 @@ function showMessage(message, window) {
   }
 }
 
-async function startMonitoring(si, mainWindow) {
+function startMonitoring(si, mainWindow) {
   log.info(`${colors.fg.yellow}start monitoring${colors.reset}`);
   let cachedCpu, cachedUsers, cachedSystem, cachedOsInfo, cachedBios;
   let firstRun = true;
@@ -38,20 +38,17 @@ async function startMonitoring(si, mainWindow) {
     !cachedOsInfo ||
     !cachedBios
   ) {
-    try {
-      cachedCpu = await si.cpu();
-      cachedUsers = await si.users();
-      cachedSystem = await si.system();
-      cachedOsInfo = await si.osInfo();
-      cachedBios = await si.bios();
+    si.cpu().then(data => cachedCpu = data);
+    si.users().then(data => cachedUsers = data);
+    si.system().then(data => cachedSystem = data);
+    si.osInfo().then(data => cachedOsInfo = data);
+    si.bios().then(data => cachedBios = data);
 
-      log.info(`${colors.fg.green}Cached data has been received${colors.reset}`);
-    } catch {
-      log.error(`${colors.fg.red}cached data ain't fetched${colors.reset}`);
-    }
+    log.info(`${colors.fg.green}Cached data has been received${colors.reset}`);
   }
 
-  setInterval(async () => {
+  // Set up the interval and return the interval ID
+  const intervalId = setInterval(async () => {
     try {
       const gpuData = await si.graphics();
       const currentLoad = await si.currentLoad();
@@ -77,14 +74,18 @@ async function startMonitoring(si, mainWindow) {
         firstRun = false;
       }
 
-      if (mainWindow && mainWindow?.webContents) {
+      if (gpuData && currentLoad && mem &&  battery && wifiConnections) {
         mainWindow?.webContents.send("system-monitoring-data", result);
       }
-    } catch {
-      log.error(`${colors.fg.red}data not received${colors.reset}`);
+    } catch (error) {
+      log.error(`${colors.fg.red}Data fetch failed: ${error}${colors.reset}`);
     }
   }, 15000);
+
+  return intervalId;
 }
+
+
 
 
 async function downloadLogFile() {
