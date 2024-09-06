@@ -60,10 +60,10 @@ export class AppComponent {
 
     if (this.isElectronApp) {
       console.log('Run in Electron');
-      this.systemInfoService.getDataFoBrowser();
+      // this.systemInfoService.getDataFoBrowser();
 
-      // this.systemInfoService.fetchDataFromElectron();
-      // this.systemInfoService.checkUpdates();
+      this.systemInfoService.fetchDataFromElectron();
+      this.systemInfoService.checkUpdates();
     } else {
       console.log('Run in browser');
       this.systemInfoService.getDataFoBrowser();

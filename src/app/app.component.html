@@ -4,19 +4,39 @@
 
 <!-- isDataReceived && !isLoading -->
 <ng-container *ngIf="!(isLoading$ | async); else loader">
-  
-
   <app-tabs [tabs]="[{ label: 'System Info' }, { label: 'Other Info' }]">
-    
     <div tabContent1>
-      <app-system-data [collectedData]="collectedData$ | async"></app-system-data>
+      <app-system-data
+        [collectedData]="collectedData$ | async"
+      ></app-system-data>
+
+      <app-footer
+        [systemData]="[collectedData$ | async]"
+        [message]="message"
+      ></app-footer>
     </div>
 
     <div tabContent2>
-      <h1 class="color_white">content 2</h1>
+      <div style="height: calc(100vh - 100px)">
+        <h1 class="color_white">content 2</h1>
+      </div>
     </div>
-    
   </app-tabs>
-
-  <app-footer [systemData]="[]" [message]="message"></app-footer>
 </ng-container>
+
+
+<!-- our background app -->
+<div class="area">
+  <ul class="circles">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ul>
+</div>

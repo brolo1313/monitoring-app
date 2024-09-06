@@ -4,14 +4,16 @@
 /* tab.component.css */
 .tabs {
   display: flex;
+  justify-content: center;
+
   margin-bottom: 10px;
 }
 
-.tabs button {
-  padding: 10px;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  background-color: #f0f0f0;
+.tabs label {
+  input {
+    cursor: pointer;
+  }
+  z-index: 999;
 }
 
 .tabs button:hover {
