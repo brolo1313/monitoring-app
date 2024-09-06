@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
 
-  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .tabs label {
@@ -16,11 +16,5 @@
   z-index: 999;
 }
 
-.tabs button:hover {
-  background-color: #ddd;
-}
+/* END CHECKBOX STYLE */
 
-.tabs button.active {
-  background-color: #ccc;
-  font-weight: bold;
-}

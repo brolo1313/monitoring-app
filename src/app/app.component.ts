@@ -76,7 +76,6 @@ export class AppComponent {
         this.cdRef.detectChanges()
       }
     })
-
   }
 
   // await this.emitEventToMainProcess();

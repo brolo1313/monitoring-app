@@ -14,7 +14,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabsComponent {
-  @Input() tabs: { label: string }[] = [];
+  @Input() tabs: { label: string, id: string }[] = [];
   selectedTabIndex = 0;
 
   selectTab(index: number): void {
