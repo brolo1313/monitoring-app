@@ -1,11 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, SimpleChanges, VERSION } from '@angular/core';
-import { combineLatest, pairwise } from 'rxjs';
 import { IBatteryInfo, IBios, ICpuInfo, IGpuData, IMemoryInfo, IOrganizedSystemData, IOsInfo, ISystem, IUser, IWifiConnections, TYPE_BENTO_ITEMS } from '../../models/system-data.models';
-import { isElectronMode } from '../../helpers/helpers';
 import { ElectronService } from '../../services/electron-service';
-import { SystemInfoService } from '../../services/system-info-service';
-import { system_mocks } from '../../mocks';
 import { RoundMath } from '../../helpers/math-round.pipe';
 import { GbConvertPipe } from '../../helpers/gb-convert.pipe';
 import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
