@@ -1,6 +1,6 @@
 {
   "name": "electron-monitor-app",
-  "version": "0.0.21-beta",
+  "version": "0.0.22-beta",
   "main": "electron/main.js",
   "productName": "System-Monitor",
   "artifactName": "${productName}-${arch}.${ext}",
