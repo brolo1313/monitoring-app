@@ -1,0 +1,136 @@
+<div class="bento__container" @bentoAnimation>
+  <div class="bento__item bento__item-1">
+    <div class="flex-center">
+      <h3>{{ cpuInfo?.details?.brand }}</h3>
+      <div class="image-wrapper">
+        <img [src]="'assets/icons/cpu.svg'" alt="CPU" data-type="cpu" />
+      </div>
+    </div>
+
+    <div class="cores-wrapper">
+      <div class="cores-state-wrapper">
+        <ng-container>
+          <div class="prevCurrentLoad">
+            <div
+              *ngFor="
+                let core of cpuInfo?.coresLoading?.prevCurrentLoad?.cpus ??
+                  [].constructor(12).fill({});
+                let i = index
+              "
+              class="core-item"
+            >
+              <p>Core {{ i + 1 }}:</p>
+              <p class="color_secondary">
+                {{ core?.loadSystem ? (core?.loadSystem | round) + "%" : "-" }}
+              </p>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container>
+          <div class="currentLoad">
+            <div
+              *ngFor="
+                let core of cpuInfo?.coresLoading?.currentLoad?.cpus;
+                let i = index
+              "
+              class="core-item"
+            >
+              <p
+                [ngClass]="{
+                  color_red: isRed(core, 'cpu'),
+                  color_green: isGreen(core, 'cpu')
+                }"
+              >
+                {{ core?.loadSystem | round }}%
+              </p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngFor="let item of items">
+    <div class="bento__item" [ngClass]="item.class">
+      <ng-container *ngIf="item?.type === type.gpu">
+        <ng-container *ngFor="let card of item?.gpu?.controllers">
+          <ng-container *ngIf="card?.vendor === 'NVIDIA'">
+            <h3>{{ card?.model }}</h3>
+            <small>{{ card?.driverVersion }}V</small>
+            <p
+              [ngClass]="{
+                color_red: isRed(card, 'gpu'),
+                color_green: isGreen(card, 'gpu')
+              }"
+            >
+              {{ card?.temperatureGpu }}&deg;
+            </p>
+            <div class="image-wrapper">
+              <img [src]="'assets/icons/gpu.svg'" alt="GPU" data-type="gpu" />
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="item?.type === type.wifiConnections && item?.wifiConnections[0]">
+        <h3>{{ item?.wifiConnections[0]?.ssid }}</h3>
+        <small>channel: {{ item?.wifiConnections[0]?.channel }}</small>
+        <small>signal Level: {{ item?.wifiConnections[0]?.signalLevel }}</small>
+        <small>type: {{ item?.wifiConnections[0]?.type }}</small>
+      </ng-container>
+
+      <ng-container *ngIf="item?.type === type.battery">
+        <h3>BATTERY</h3>
+        <small>model: {{ item?.battery?.model }}</small>
+        <small
+          >percent:
+          <span
+            [ngClass]="{
+              color_green: item?.battery?.percent > 30,
+              color_red: item?.battery?.percent < 30
+            }"
+          >
+            {{ item?.battery?.percent }}%</span
+          ></small
+        >
+        <small>voltage: {{ item?.battery?.voltage }}V</small>
+        <small
+          >capacity: {{ item?.battery?.maxCapacity
+          }}{{ item?.battery?.capacityUnit }}</small
+        >
+      </ng-container>
+
+      <ng-container *ngIf="item?.type === type.memory">
+        <h3>RAM</h3>
+        <small>total: {{ item?.memory?.total | gbConvert }}</small>
+        <small>used: {{ item?.memory?.used | gbConvert }}</small>
+      </ng-container>
+
+      <ng-container *ngIf="item?.type === type.versions">
+        <h3>Versions</h3>
+        <small>Node: {{ item?.versions?.nodeVersion }}</small>
+        <small>Angular: {{ item?.versions?.angularVersion }}</small>
+        <small>Electron: {{ item?.versions?.electronVersion }}</small>
+        <small>Chrome: {{ item?.versions?.chromeVersion }}</small>
+      </ng-container>
+
+      <ng-container *ngIf="item?.type === type.systemInfo">
+        <div class="system-info-wrapper">
+          <div class="image-wrapper">
+            <img
+              [src]="'assets/icons/windows.svg'"
+              alt="windows"
+              data-type="windows"
+            />
+          </div>
+          <div class="system-item-info">
+            <h3>{{ item?.systemInfo?.osInfo?.distro }}</h3>
+            <small>model notebook: {{ item?.systemInfo?.system?.model }}</small>
+            <small>bios version: {{ item?.systemInfo?.bios?.version }}</small>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>

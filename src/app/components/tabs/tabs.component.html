@@ -1,0 +1,21 @@
+<div class="tabs">
+  <ng-container *ngFor="let tab of tabs; let i = index">
+    <label [for]="tab.id"  class="radio-label"  class="tab-label">
+      <input
+        type="radio"
+        name="radio"
+        [id]="tab.id"
+        [value]="i"
+        [(ngModel)]="selectedTabIndex"
+      />
+    </label>
+  </ng-container>
+ 
+</div>
+
+<ng-container *ngIf="selectedTabIndex === 0">
+  <ng-content select="[tabContent1]"></ng-content>
+</ng-container>
+<ng-container *ngIf="selectedTabIndex === 1">
+  <ng-content select="[tabContent2]"></ng-content>
+</ng-container>

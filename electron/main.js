@@ -42,12 +42,13 @@ try {
             mainWindow
           );
           const updater = new AutoUpdater(mainWindow);
-
           updater.registerEvents();
           updater.checkForUpdates();
         }, 5000);
       } else {
-        log.error(`${colors.fg.red} Main Window is not initialized ${colors.reset}`);
+        log.error(
+          `${colors.fg.red} Main Window is not initialized ${colors.reset}`
+        );
       }
     });
   });
@@ -100,4 +101,27 @@ ipcMain.handle("download-log-file", async () => {
     );
     throw error;
   }
+});
+
+ipcMain.on("clear-monitoring-interval", () => {
+  if (monitoringInterval) {
+    clearInterval(monitoringInterval);
+    monitoringInterval = null;
+    log.info(
+      `${colors.fg.magenta}Monitoring interval cleared on refresh.${colors.reset}`
+    );
+  }
+});
+
+
+ipcMain.on("emit-updating-logic", () => {
+
+  console.log('emit-updating-logic');
+     //   showMessage(
+        //     `Checking for updates. Current version ${app.getVersion()}`,
+        //     mainWindow
+        //   );
+        //   const updater = new AutoUpdater(mainWindow);
+        //   updater.registerEvents();
+        //   updater.checkForUpdates();
 });

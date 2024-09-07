@@ -16,6 +16,7 @@ export enum TYPE_BENTO_ITEMS {
   battery = 'battery',
   memory = 'memory',
   versions='versions',
+  gpu = 'gpu',
 }
 
 export interface IGpuController {
