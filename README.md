@@ -14,7 +14,7 @@ Native js in main process, typescript with rxjs on the client side
   <img alt="GitHub Repo stars" src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white">
 </a>&nbsp;&nbsp;
   <a href="#">
-  <img alt="GitHub Repo stars" src="https://img.shields.io/badge/Material%20UI-007FFF?style=for-the-badge&logo=mui&logoColor=white">
+  <img style="width: 100px" alt="GitHub Repo stars" src="https://img.shields.io/badge/Electron-2B2E3A?logo=electron&logoColor=fff">
 </a>&nbsp;&nbsp;
 
 </p>
