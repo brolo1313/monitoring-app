@@ -1,0 +1,104 @@
+$main-color: forestgreen;
+$secondary-color: azure;
+$third-color: #1b263b;
+
+.chat-container {
+  width: 700px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-title {
+  background-color: $main-color;
+  color: #fff;
+  padding: 10px;
+  font-size: 18px;
+  text-align: center;
+  border-bottom: solid #fff 1px;
+}
+
+.chat-body {
+  height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+
+  scrollbar-width: thin;
+  background: antiquewhite;
+}
+
+.user-message,
+.chatbot-message {
+  margin: 5px;
+  padding: 8px;
+  width: fit-content;
+  max-width: 490px;
+  clear: both;
+}
+
+.user-message {
+  background-color: $main-color;
+  color: #fff;
+  border-radius: 8px 8px 0 8px;
+  float: right;
+}
+
+.chatbot-message {
+  background-color: $secondary-color;
+  border-radius: 8px 8px 8px 0;
+  float: left;
+}
+
+.chat-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px;
+  background-color: #f1f1f1;
+}
+
+#user-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+button[disabled] {
+  background-color: lightgray !important;
+}
+
+#send-button {
+  background-color: $main-color;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+
+.typing-indicator {
+  background-color: inherit;
+  color: darkgrey;
+}
+
+.ng-dirty,
+.ng-touched, 
+.ng-pristine, 
+.ng-valid {
+  border: 1px solid #ccc !important;
+}
+
+input:invalid {
+  border: 1px solid #ccc !important;
+}
+
+#send-button:focus {
+  border: 1px solid #ccc !important;
+}

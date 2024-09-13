@@ -1,0 +1,23 @@
+<div class="chat-container">
+  <div class="chat-title">Chatbot</div>
+  <div class="chat-body" id="chat-body">
+    <!-- Loop through messages and display -->
+    <div *ngFor="let message of messages" [ngClass]="message.sender">
+      {{ message.text }}
+    </div>
+    <!-- Typing indicator -->
+    <div *ngIf="isChatbotTyping" class="chatbot-message typing-indicator">
+      {{ typingIndicatorMessage }}
+    </div>
+  </div>
+  <div class="chat-footer">
+    <input
+      id="user-input"
+      type="text"
+      placeholder="Type your message here..."
+      [(ngModel)]="userInput"
+      (keydown.enter)="sendMessage()"
+    />
+    <button [disabled]="!userInput.length" id="send-button" (click)="sendMessage()">Send</button>
+  </div>
+</div>

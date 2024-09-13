@@ -11,6 +11,7 @@
   "scripts": {
     "ng": "ng",
     "start": "electron-forge start",
+    "test-electron-dev": "electron .",
     "test-build": "ng build --base-href ./ && electron .",
     "test-local-both": "concurrently \"ng serve --configuration=electron-local\" \"wait-on http://localhost:4200 && electron .\"",
     "build": "ng build",

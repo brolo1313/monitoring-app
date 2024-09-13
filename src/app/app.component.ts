@@ -10,6 +10,7 @@ import { GbConvertPipe } from './helpers/gb-convert.pipe';
 import { FooterComponent } from './components/footer/footer.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { SystemDataComponent } from './components/system-data/system-data.component';
+import { ChatComponent } from './components/chat-bot/chat-bot.component';
 
 declare global {
   interface Window {
@@ -22,7 +23,7 @@ declare global {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RoundMath, LoaderComponent, GbConvertPipe, FooterComponent, TabsComponent, SystemDataComponent],
+  imports: [CommonModule, RouterOutlet, RoundMath, LoaderComponent, GbConvertPipe, FooterComponent, TabsComponent, SystemDataComponent, ChatComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -63,10 +64,10 @@ export class AppComponent {
   checkEnvRunning(): void {
     if (this.isElectronApp) {
       console.log('Run in Electron');
-      // this.systemInfoService.getDataFoBrowser();
+      this.systemInfoService.getDataFoBrowser();
 
-      this.systemInfoService.fetchDataFromElectron();
-      this.systemInfoService.checkUpdates();
+      // this.systemInfoService.fetchDataFromElectron();
+      // this.systemInfoService.checkUpdates();
     } else {
       console.log('Run in browser');
       this.systemInfoService.getDataFoBrowser();
