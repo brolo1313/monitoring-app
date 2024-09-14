@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ElectronService } from '../../services/electron-service';
+import { GeneratingLoaderComponent } from '../generating-loader/generating-loader.component';
 
 
 @Component({
@@ -10,6 +12,7 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     FormsModule,
+    GeneratingLoaderComponent
   ],
   templateUrl: './chat-bot.component.html',
   styleUrl: './chat-bot.component.scss',
@@ -17,13 +20,33 @@ import { FormsModule } from '@angular/forms';
 })
 export class ChatComponent implements OnInit {
   // http = inject(HttpClient);
+  electronService = inject(ElectronService);
+  cdr = inject(ChangeDetectorRef);
+
 
   messages: { text: string, sender: string }[] = [];
   userInput: string = '';
   isChatbotTyping: boolean = false;
-  typingIndicatorMessage: string = 'Typing';
   typingIntervalId: any;
 
+  sendMessage() {
+    const message = this.userInput.trim();
+    if (message === '') return;
+
+    this.displayUserMessage(message);
+    this.userInput = '';
+
+    this.isChatbotTyping = true;
+
+    this.electronService.messageHttpRequest(message).then((response) => {
+      console.log('Response:', response);
+      this.isChatbotTyping = false;
+      this.displayChatbotMessage(response);
+    }).catch((error) => {
+      console.error('Error:', error);
+      this.isChatbotTyping = false;
+    });
+  }
 
   ngOnInit(): void {
     this.displayChatbotMessage("Hi, I'm a Chat Bot. What can I help you with today?");
@@ -35,40 +58,16 @@ export class ChatComponent implements OnInit {
   }
 
   displayChatbotMessage(message: string): void {
-    this.isChatbotTyping = false;
-    clearInterval(this.typingIntervalId);
-    this.messages.push({ text: message, sender: 'chatbot-message' });
-    this.scrollChatToBottom();
-  }
+    console.log('displayChatbotMessage', message);
+    if (message) {
+      this.isChatbotTyping = false;
+      clearInterval(this.typingIntervalId);
+      this.messages.push({ text: message, sender: 'chatbot-message' });
 
-  displayTypingIndicator(): void {
-    if (!this.isChatbotTyping) {
-      this.isChatbotTyping = true;
-      this.typingIndicatorMessage = 'Typing';
-      this.typingIntervalId = setInterval(() => {
-        this.typingIndicatorMessage = this.typingIndicatorMessage === 'Typing...' ? 'Typing' : this.typingIndicatorMessage + '.';
-      }, 400);
+      this.cdr.detectChanges();
+
+      this.scrollChatToBottom();
     }
-  }
-
-  sendMessage(): void {
-    const message = this.userInput.trim();
-    if (message === '') return;
-
-    this.displayUserMessage(message);
-    this.userInput = ''; // Clear input field
-
-    this.displayTypingIndicator();
-
-    // this.http.post<any>('http://127.0.0.1:3000/message', { message: message })
-    //   .subscribe(
-    //     response => {
-    //       this.displayChatbotMessage(response.message);
-    //     },
-    //     error => {
-    //       console.error('Error:', error);
-    //     }
-    //   );
   }
 
   private scrollChatToBottom(): void {

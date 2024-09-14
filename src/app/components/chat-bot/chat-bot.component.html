@@ -6,9 +6,7 @@
       {{ message.text }}
     </div>
     <!-- Typing indicator -->
-    <div *ngIf="isChatbotTyping" class="chatbot-message typing-indicator">
-      {{ typingIndicatorMessage }}
-    </div>
+    <app-generating-loader class="chatbot-message indicator" *ngIf="isChatbotTyping"></app-generating-loader>
   </div>
   <div class="chat-footer">
     <input

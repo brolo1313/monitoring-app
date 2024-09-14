@@ -9,6 +9,7 @@ const {
   downloadLogFile,
 } = require("./helpers/functions");
 const log = require("electron-log");
+const http = require('http');
 
 const { colors } = require("./helpers/constants");
 
@@ -124,4 +125,20 @@ ipcMain.on("emit-updating-logic", () => {
         //   const updater = new AutoUpdater(mainWindow);
         //   updater.registerEvents();
         //   updater.checkForUpdates();
+});
+
+
+ipcMain.handle('http-request', async (event, message) => {
+  return new Promise((resolve, reject) => {
+
+    console.log('message', message);
+    try {
+      setTimeout(() => {
+        resolve(message);
+      }, 2000);
+    } catch (e) {
+      reject(e);
+    }
+  
+  });
 });

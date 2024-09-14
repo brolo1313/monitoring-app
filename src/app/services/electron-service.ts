@@ -51,6 +51,12 @@ export class ElectronService {
     }
   }
 
+
+  async messageHttpRequest(message: string): Promise<any> {
+    return (window as any).electron.httpRequest(message);
+  }
+
+  
   get isElectron(): boolean {
     return !!(window && window.process && window.process.type);
   }

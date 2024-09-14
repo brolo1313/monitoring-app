@@ -49,6 +49,10 @@ $third-color: #1b263b;
   background-color: $secondary-color;
   border-radius: 8px 8px 8px 0;
   float: left;
+
+  &.indicator {
+    background-color: inherit;
+  }
 }
 
 .chat-footer {
@@ -79,26 +83,4 @@ button[disabled] {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
-
-
-
-.typing-indicator {
-  background-color: inherit;
-  color: darkgrey;
-}
-
-.ng-dirty,
-.ng-touched, 
-.ng-pristine, 
-.ng-valid {
-  border: 1px solid #ccc !important;
-}
-
-input:invalid {
-  border: 1px solid #ccc !important;
-}
-
-#send-button:focus {
-  border: 1px solid #ccc !important;
 }
