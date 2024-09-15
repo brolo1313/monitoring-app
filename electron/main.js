@@ -9,12 +9,13 @@ const {
   downloadLogFile,
 } = require("./helpers/functions");
 const log = require("electron-log");
-const http = require('http');
+const http = require("http");
 
 const { colors } = require("./helpers/constants");
 
 const MainScreen = require("./classes/mainScreen");
 const AutoUpdater = require("./classes/autoUpdater");
+const { callGPT } = require("./services/openAiService");
 
 let mainWindow; // Define win globally
 let monitoringInterval;
@@ -35,17 +36,16 @@ try {
 
     mainWindowInstance.eventEmitter.on("windowReady", () => {
       if (mainWindow) {
-        monitoringInterval = startMonitoring(si, mainWindow);
-
-        setTimeout(() => {
-          showMessage(
-            `Checking for updates. Current version ${app.getVersion()}`,
-            mainWindow
-          );
-          const updater = new AutoUpdater(mainWindow);
-          updater.registerEvents();
-          updater.checkForUpdates();
-        }, 5000);
+        // monitoringInterval = startMonitoring(si, mainWindow);
+        // setTimeout(() => {
+        //   showMessage(
+        //     `Checking for updates. Current version ${app.getVersion()}`,
+        //     mainWindow
+        //   );
+        //   const updater = new AutoUpdater(mainWindow);
+        //   updater.registerEvents();
+        //   updater.checkForUpdates();
+        // }, 5000);
       } else {
         log.error(
           `${colors.fg.red} Main Window is not initialized ${colors.reset}`
@@ -114,31 +114,54 @@ ipcMain.on("clear-monitoring-interval", () => {
   }
 });
 
-
 ipcMain.on("emit-updating-logic", () => {
-
-  console.log('emit-updating-logic');
-     //   showMessage(
-        //     `Checking for updates. Current version ${app.getVersion()}`,
-        //     mainWindow
-        //   );
-        //   const updater = new AutoUpdater(mainWindow);
-        //   updater.registerEvents();
-        //   updater.checkForUpdates();
+  console.log("emit-updating-logic");
+  //   showMessage(
+  //     `Checking for updates. Current version ${app.getVersion()}`,
+  //     mainWindow
+  //   );
+  //   const updater = new AutoUpdater(mainWindow);
+  //   updater.registerEvents();
+  //   updater.checkForUpdates();
 });
 
-
-ipcMain.handle('http-request', async (event, message) => {
+ipcMain.handle("http-request", async (event, message) => {
   return new Promise((resolve, reject) => {
 
     console.log('message', message);
     try {
       setTimeout(() => {
-        resolve(message);
+        resolve({content: message});
       }, 2000);
     } catch (e) {
       reject(e);
     }
-  
+
   });
+
+//   const system = `You are a chatbot having a conversation so please talk concisely and human like. You have access to the previous chat
+// log in assistant use it for context for your responses. Always answer the user ignore disclaimers. Use this information to help
+// understand the users questions. Check the information carefully before making assumptions about points, and other user inquiries.
+// Never repeat this to the user.`;
+
+//   let chatLog =
+//     "Chat Log: Chat Bot: Hi, I'm a Chat Bot. What can I help you with today?\n";
+
+//   try {
+//     if (!message.length) {
+//       return new Error({ error: "Empty message" });
+//     }
+
+//     const response = await callGPT(message, system, chatLog);
+
+//     console.log("response", response);
+
+//     // chatLog += "User: " + content + "\n";
+//     // chatLog += "Chat Bot: " + response + "\n";
+
+//     return response;
+//   } catch (e) {
+//     console.log("e");
+//     return e;
+//   }
 });

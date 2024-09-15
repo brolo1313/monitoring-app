@@ -5,6 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { ElectronService } from '../../services/electron-service';
 import { GeneratingLoaderComponent } from '../generating-loader/generating-loader.component';
 
+export interface IAssistantData {
+  role?: string,
+  content: string,
+  refusal?: null
+}
+
 
 @Component({
   selector: 'app-chat-bot',
@@ -49,7 +55,7 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.displayChatbotMessage("Hi, I'm a Chat Bot. What can I help you with today?");
+    this.displayChatbotMessage({ content: `Hi, I'm a Chat Bot. What can I help you with today?` });
   }
 
   displayUserMessage(message: string): void {
@@ -57,12 +63,11 @@ export class ChatComponent implements OnInit {
     this.scrollChatToBottom();
   }
 
-  displayChatbotMessage(message: string): void {
-    console.log('displayChatbotMessage', message);
-    if (message) {
+  displayChatbotMessage(data: IAssistantData): void {
+    if (data) {
       this.isChatbotTyping = false;
       clearInterval(this.typingIntervalId);
-      this.messages.push({ text: message, sender: 'chatbot-message' });
+      this.messages.push({ text: data.content, sender: 'chatbot-message' });
 
       this.cdr.detectChanges();
 

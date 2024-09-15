@@ -1,14 +1,18 @@
 // services/openaiService.js
-const { Configuration, OpenAIApi } = require("openai");
+const {  OpenAI } = require("openai");
 const dotenv = require("dotenv");
 
-dotenv.config({ path: "../../.env" });
+dotenv.config({ path: ".env" });
 
-const configuration = new Configuration({
-  apiKey: process.env.API_KEY,
+const apiKey = process.env.OPENAI_API_KEY || process.env.API_KEY;
+
+if (!apiKey) {
+  throw new Error("API key is missing. Please set it in your .env file.");
+}
+
+const openai = new OpenAI({
+  apiKey: apiKey,
 });
-
-const openai = new OpenAIApi(configuration);
 
 async function callGPT(promptContent, systemContent, previousChat) {
   try {
@@ -28,18 +32,19 @@ async function callGPT(promptContent, systemContent, previousChat) {
     };
 
     messages.push(userPrompt);
-    messages.push(systemPrompt);
-    messages.push(assistantPrompt);
+    // messages.push(systemPrompt);
+    // messages.push(assistantPrompt);
 
-    const response = await openai.createChatCompletion({
+    console.log('messages', messages);
+
+    const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-1106",
-      messages: messages,
+      messages,
     });
 
-    console.log(response.data.choices[0].message.content);
-    return response.data.choices[0].message.content;
+    console.log('callGPT',response);
+    return response.choices[0].message;
   } catch (error) {
-    console.error("Error:", error);
     return `An error occurred while processing the request: ${error}`;
   }
 }
