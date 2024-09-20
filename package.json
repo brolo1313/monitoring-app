@@ -66,6 +66,7 @@
     "@angular/platform-browser-dynamic": "^18.0.4",
     "@angular/router": "^18.0.4",
     "concurrently": "^8.2.2",
+    "dotenv": "^16.4.5",
     "electron-log": "^5.1.7",
     "electron-squirrel-startup": "^1.0.1",
     "electron-updater": "^6.2.1",
