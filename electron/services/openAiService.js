@@ -1,14 +1,15 @@
 // services/openaiService.js
 const {  OpenAI } = require("openai");
-const dotenv = require("dotenv");
+const path = require('path');
+const dotenv = require('dotenv');
 
-dotenv.config({ path: ".env" });
+const result = dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const apiKey = process.env.OPENAI_API_KEY || process.env.API_KEY;
-
-if (!apiKey) {
-  throw new Error("API key is missing. Please set it in your .env file.");
+if (result.error) {
+  throw result.error;
 }
+
+const apiKey = process?.env?.OPENAI_API_KEY;
 
 const openai = new OpenAI({
   apiKey: apiKey,

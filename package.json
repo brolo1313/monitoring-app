@@ -43,7 +43,8 @@
     "files": [
       "dist/browser/**/*",
       "electron/**/*",
-      "package.json"
+      "package.json",
+      ".env"
     ],
     "nsis": {
       "artifactName": "${productName}-Installer-${version}.${ext}",

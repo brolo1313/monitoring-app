@@ -28,4 +28,4 @@ Run `npm run make` - packages the app and then creates platform-specific install
 
 ## Electron Test build
 First `ng build`.
-Then run `npm run test-build`.
+Then run `npm run test-build` or `npm run make` ( its longer, but better for testing )

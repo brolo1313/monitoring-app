@@ -9,7 +9,9 @@ const {
   downloadLogFile,
 } = require("./helpers/functions");
 const log = require("electron-log");
-const http = require("http");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: ".env" });
 
 const { colors } = require("./helpers/constants");
 
