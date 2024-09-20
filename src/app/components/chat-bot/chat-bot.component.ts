@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ElectronService } from '../../services/electron-service';
 import { GeneratingLoaderComponent } from '../generating-loader/generating-loader.component';
+import { marked } from 'marked';
 
 export interface IAssistantData {
   role?: string,
   content: string,
   refusal?: null
 }
-
 
 @Component({
   selector: 'app-chat-bot',
@@ -21,19 +20,30 @@ export interface IAssistantData {
     GeneratingLoaderComponent
   ],
   templateUrl: './chat-bot.component.html',
-  styleUrl: './chat-bot.component.scss',
+  styleUrls: ['./chat-bot.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatComponent implements OnInit {
-  // http = inject(HttpClient);
   electronService = inject(ElectronService);
   cdr = inject(ChangeDetectorRef);
 
-
-  messages: { text: string, sender: string }[] = [];
+  messages: { text: string, sender: string, htmlContent?: string }[] = [];
   userInput: string = '';
   isChatbotTyping: boolean = false;
   typingIntervalId: any;
+
+  promptsPresets = [
+    {
+      message: 'Example table',
+      icon: 'assets/icons/chat-bot/table-preset-icon.svg',
+      id: 'table'
+    },
+    {
+      message: 'Example list',
+      icon: 'assets/icons/chat-bot/list-preset-icon.svg',
+      id: 'list'
+    }
+  ]
 
   sendMessage() {
     const message = this.userInput.trim();
@@ -45,9 +55,10 @@ export class ChatComponent implements OnInit {
     this.isChatbotTyping = true;
 
     this.electronService.messageHttpRequest(message).then((response) => {
-      console.log('Response:', response);
       this.isChatbotTyping = false;
-      this.displayChatbotMessage(response);
+      const markdownHTML = marked(response.content);
+
+      this.displayChatbotMessage({ ...response, htmlContent: markdownHTML });
     }).catch((error) => {
       console.error('Error:', error);
       this.isChatbotTyping = false;
@@ -55,7 +66,7 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.displayChatbotMessage({ content: `Hi, I'm a Chat Bot. What can I help you with today?` });
+    this.displayChatbotMessage({ content: `Hi, I'm a Chat Bot. What can I help you with today?`, htmlContent: marked(`Hi, I'm a Chat Bot. What can I help you with today?`) });
   }
 
   displayUserMessage(message: string): void {
@@ -63,14 +74,13 @@ export class ChatComponent implements OnInit {
     this.scrollChatToBottom();
   }
 
-  displayChatbotMessage(data: IAssistantData): void {
+  displayChatbotMessage(data: IAssistantData & { htmlContent?: string | any }): void {
     if (data) {
       this.isChatbotTyping = false;
       clearInterval(this.typingIntervalId);
-      this.messages.push({ text: data.content, sender: 'chatbot-message' });
+      this.messages.push({ text: data.content, sender: 'chatbot-message', htmlContent: data.htmlContent });
 
       this.cdr.detectChanges();
-
       this.scrollChatToBottom();
     }
   }

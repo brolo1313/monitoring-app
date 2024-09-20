@@ -1,13 +1,16 @@
 <div class="chat-container">
   <div class="chat-title">Chatbot</div>
-  <div class="chat-body" id="chat-body">
-    <!-- Loop through messages and display -->
-    <div *ngFor="let message of messages" [ngClass]="message.sender">
-      {{ message.text }}
-    </div>
-    <!-- Typing indicator -->
+  <div id="chat-body" class="chat-body">
+    <ng-container *ngFor="let message of messages">
+      <div [ngClass]="message.sender">
+        <div *ngIf="message.htmlContent" [innerHTML]="message.htmlContent"></div>
+        <div *ngIf="!message.htmlContent">{{ message.text }}</div>
+      </div>
+    </ng-container>
+
     <app-generating-loader id="generating-loader" class="chatbot-message indicator" *ngIf="isChatbotTyping"></app-generating-loader>
   </div>
+  
   <div class="chat-footer">
     <input
       id="user-input"
@@ -18,4 +21,13 @@
     />
     <button [disabled]="!userInput.length" id="send-button" (click)="sendMessage()">Send</button>
   </div>
+
+</div>
+
+<div class="prompt-presets">
+  <ng-container *ngFor="let preset of promptsPresets">
+      <div class="preset-item" (click)="userInput = preset.message">
+        <img [src]="preset.icon" alt="icon-preset-{{preset.id}}">
+      </div>
+  </ng-container>
 </div>

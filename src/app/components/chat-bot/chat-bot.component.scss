@@ -4,7 +4,7 @@ $third-color: #1b263b;
 
 .chat-container {
   width: 700px;
-  margin: 20px auto;
+  margin: 20px auto 10px auto;
   border: 1px solid #ccc;
   border-radius: 8px;
   overflow: hidden;
@@ -85,4 +85,81 @@ button[disabled] {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+// TABLE
+::ng-deep table {
+  width: 100%;
+  max-width: 100%;
+  margin: 1rem 0;
+  background-color: transparent;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  border-collapse: separate !important;
+
+  thead {
+    th {
+      vertical-align: bottom;
+      border-bottom: 2px solid #dcdcdc;
+    }
+  }
+
+  td,
+  th {
+    padding: 0.75rem;
+    vertical-align: top;
+  }
+
+  tbody {
+    td {
+      border-bottom: 1px solid #dcdcdc;
+    }
+
+    tr:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+::ng-deep ul {
+  li {
+    list-style-type: decimal;
+  }
+}
+
+.prompt-presets {
+  display: flex;
+  column-gap: 20px;
+
+  .preset-item {
+    width: 100px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+
+    border: 1px solid white;
+    border-radius: 10px;
+
+    cursor: pointer;
+    span {
+      color: white;
+    }
+  }
+
+  .preset-item:hover{
+    border: 2px solid white;
+  }
+}
+
+
+img {
+  font-size: 2.5rem;
+  margin: auto;
+  background: transparent;
+
+  width: 30px;
 }
