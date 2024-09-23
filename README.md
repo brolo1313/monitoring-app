@@ -8,19 +8,29 @@ Native js in main process, typescript with rxjs on the client side
 
 <p align='center'>
  <a href="#">
-    <img src="https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white" />
+    <img alt="Angular" src="https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white" />
   </a>&nbsp;&nbsp;
   <a href="#">
-  <img alt="GitHub Repo stars" src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white">
+  <img alt="TS" src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white">
 </a>&nbsp;&nbsp;
   <a href="#">
-  <img style="width: 100px" alt="GitHub Repo stars" src="https://img.shields.io/badge/Electron-2B2E3A?logo=electron&logoColor=fff">
+  <img style="width: 100px" alt="Electron" src="https://img.shields.io/badge/Electron-2B2E3A?logo=electron&logoColor=fff">
 </a>&nbsp;&nbsp;
+<a href="#">
+  <img style="width: 100px" alt="OPEN AI" src="https://img.shields.io/badge/Electron-2B2E3A?logo=electron&logoColor=fff">
+</a>&nbsp;&nbsp;
+
+
 
 </p>
 
 
-**DEMO**
+**SCREENSHOTS**
+First tab:
+![image](https://github.com/user-attachments/assets/3adfa33e-dbdc-40a2-96df-9af0121c0f74)
+Second tab:
+![image](https://github.com/user-attachments/assets/0a29dabe-7499-4574-b050-8d68d07b6ca3)
+
 
 You can install  itself , just go froward https://github.com/brolo1313/monitoring-app/releases.
 Remember that it's for Windows only, this app is like a home project to learn and explore a new technology
