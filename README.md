@@ -1,8 +1,10 @@
 # System Monitoring Desktop App
 
 About `app`:
-System Monitoring application for Windows, what handle your  system info in real time and showing client (Angular). 
-For the BE part, we used the Electron framework, which has access to node processes and render part of the view, as I wrote above, Angular was used.
+<br>
+System Monitoring application for Windows, what handle your  system info in real time and showing client (Angular). <br>
+An additional you have possibility to ask your personal assistant wich use OPENAI API (model GPT-3.5-turbo-1106) any question.<br>
+For the BE part, we used the Electron framework, which has access to node processes and render part of the view, as I wrote above, Angular was used.<br>
 Native js in main process, typescript with rxjs on the client side
 
 
@@ -17,19 +19,16 @@ Native js in main process, typescript with rxjs on the client side
   <img style="width: 100px" alt="Electron" src="https://img.shields.io/badge/Electron-2B2E3A?logo=electron&logoColor=fff">
 </a>&nbsp;&nbsp;
 <a href="#">
-  <img style="width: 100px" alt="OPEN AI" src="https://img.shields.io/badge/Electron-2B2E3A?logo=electron&logoColor=fff">
+  <img style="width: 100px; height:27px" alt="OPEN AI" src="https://img.shields.io/badge/openapiinitiative-%23000000.svg?style=for-the-badge&logo=openapiinitiative&logoColor=white">
 </a>&nbsp;&nbsp;
-
-
-
 </p>
 
 
 **SCREENSHOTS**
-First tab:
-![image](https://github.com/user-attachments/assets/3adfa33e-dbdc-40a2-96df-9af0121c0f74)
-Second tab:
-![image](https://github.com/user-attachments/assets/0a29dabe-7499-4574-b050-8d68d07b6ca3)
+
+First tab: ![image](https://github.com/user-attachments/assets/3adfa33e-dbdc-40a2-96df-9af0121c0f74)
+
+Second tab: ![image](https://github.com/user-attachments/assets/0a29dabe-7499-4574-b050-8d68d07b6ca3)
 
 
 You can install  itself , just go froward https://github.com/brolo1313/monitoring-app/releases.
